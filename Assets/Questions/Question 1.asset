@@ -13,3 +13,9 @@ MonoBehaviour:
   m_Name: Question 1
   m_EditorClassIdentifier: 
   question: Koji je najpopularniji gangsterski film?
+  answers:
+  - The Godfather
+  - Scarface
+  - Goodfellas
+  - 'Taxi Driver '
+  correctAnswerIndex: 0

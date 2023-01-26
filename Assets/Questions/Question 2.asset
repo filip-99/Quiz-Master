@@ -13,3 +13,9 @@ MonoBehaviour:
   m_Name: Question 2
   m_EditorClassIdentifier: 
   question: Koji je najpopularniji horor film?
+  answers:
+  - Citizen Kane
+  - Psycho
+  - 'The Exorcist '
+  - Split
+  correctAnswerIndex: 1

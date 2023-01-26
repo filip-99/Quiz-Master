@@ -13,3 +13,9 @@ MonoBehaviour:
   m_Name: Question 6
   m_EditorClassIdentifier: 
   question: "Ko je re\u017Eirao film \"The Godfather\""
+  answers:
+  - Quentin Tarantino
+  - Martin Scorsese
+  - Brian De Palma
+  - Francis Ford Coppola
+  correctAnswerIndex: 3

@@ -13,3 +13,9 @@ MonoBehaviour:
   m_Name: Question 4
   m_EditorClassIdentifier: 
   question: Koja komedija je najpopularnija?
+  answers:
+  - 'Scary Movie '
+  - 'Forrest Gump '
+  - 'A Haunted House '
+  - Borat
+  correctAnswerIndex: 1
