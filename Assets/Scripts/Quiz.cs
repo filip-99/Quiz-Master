@@ -24,30 +24,37 @@ public class Quiz : MonoBehaviour
 
     [Header("Timer")]
     [SerializeField] Image timerImage;
-    Timer timer;
+
+    [Header("Scoring")]
+    [SerializeField] TextMeshProUGUI scoreText;
 
 
-    void Start()
-    {
-        timer = FindObjectOfType<Timer>();
-    }
 
     void Update()
     {
-        timerImage.fillAmount = timer.fillFraction;
-        if (timer.loadNextQuestion)
+        timerImage.fillAmount = Timer.instance.fillFraction;
+        if (Timer.instance.loadNextQuestion)
         {
             hasAnsweredEarly = false;
             GetNextQuestion();
             Timer.instance.loadNextQuestion = false;
         }
-        else if (!hasAnsweredEarly && !timer.isAnsweringQuestion)
+        else if (!hasAnsweredEarly && !Timer.instance.isAnsweringQuestion)
         {
             DisplayAnswer(-1);
             SetButtonState(false);
         }
     }
 
+    public void OnAnswerSelected(int index)
+    {
+        hasAnsweredEarly = true;
+        DisplayAnswer(index);
+        SetButtonState(false);
+        Timer.instance.CancelTimer();
+        // Setujemo tekst za skor
+        scoreText.text = "Score: " + ScoreKeeper.instance.CalculateScore() + "%";
+    }
 
     void DisplayAnswer(int index)
     {
@@ -57,6 +64,8 @@ public class Quiz : MonoBehaviour
             questionText.text = "Tačno!";
             buttonImage = answerButtons[index].GetComponent<Image>();
             buttonImage.sprite = correctAnswerSprite;
+            // Kada tačno odgovorimo na pitanje povećaćemo vrednost tačnih odgovora
+            ScoreKeeper.instance.IncrementCorrectAnswers();
         }
         else
         {
@@ -71,9 +80,10 @@ public class Quiz : MonoBehaviour
         if (questions.Count > 0)
         {
             SetButtonState(true);
-            DisplayQuestion();
             SetDefaultButtonSprites();
             GetRandomQuestion();
+            DisplayQuestion();
+            ScoreKeeper.instance.IncrementQuestionsSeen();
         }
     }
 
@@ -85,14 +95,6 @@ public class Quiz : MonoBehaviour
         // U koliko pitanje postoji u listi ukloni ga
         if (questions.Contains(currentQuestion))
             questions.Remove(currentQuestion);
-    }
-
-    public void OnAnswerSelected(int index)
-    {
-        hasAnsweredEarly = true;
-        DisplayAnswer(index);
-        SetButtonState(false);
-        Timer.instance.CancelTimer();
     }
 
     private void DisplayQuestion()
