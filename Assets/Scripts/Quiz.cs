@@ -6,16 +6,65 @@ using UnityEngine.UI;
 
 public class Quiz : MonoBehaviour
 {
+    [Header("Questions")]
     [SerializeField] TextMeshProUGUI questionText;
-    [SerializeField] QuestionSO question;
+    // Potrebna je lista koja će sadržati pitanja
+    [SerializeField] List<QuestionSO> questions;
+    // Promenjiva će sadržati određeno pitanje iz liste
+    QuestionSO currentQuestion;
+
+    [Header("Answers")]
     [SerializeField] GameObject[] answerButtons;
     int correctAnswerIndex;
+    bool hasAnsweredEarly;
+
+    [Header("Buttons")]
     [SerializeField] Sprite defaultAnswerSprite;
     [SerializeField] Sprite correctAnswerSprite;
+
+    [Header("Timer")]
+    [SerializeField] Image timerImage;
+    Timer timer;
+
 
     void Start()
     {
         GetNextQuestion();
+        timer = FindObjectOfType<Timer>();
+    }
+
+    void Update()
+    {
+        timerImage.fillAmount = timer.fillFraction;
+        if (timer.loadNextQuestion)
+        {
+            hasAnsweredEarly = false;
+            GetNextQuestion();
+            Timer.instance.loadNextQuestion = false;
+        }
+        else if (!hasAnsweredEarly && !timer.isAnsweringQuestion)
+        {
+            DisplayAnswer(-1);
+            SetButtonState(false);
+        }
+    }
+
+
+    void DisplayAnswer(int index)
+    {
+        Image buttonImage;
+        if (index == currentQuestion.GetCorrectAnswerIndex())
+        {
+            questionText.text = "Tačno!";
+            buttonImage = answerButtons[index].GetComponent<Image>();
+            buttonImage.sprite = correctAnswerSprite;
+        }
+        else
+        {
+            questionText.text = "Tačan odgovor je\n" + currentQuestion.GetAnswer(currentQuestion.GetCorrectAnswerIndex());
+            buttonImage = answerButtons[currentQuestion.GetCorrectAnswerIndex()].GetComponent<Image>();
+            buttonImage.sprite = correctAnswerSprite;
+        }
     }
 
     void GetNextQuestion()
@@ -27,30 +76,20 @@ public class Quiz : MonoBehaviour
 
     public void OnAnswerSelected(int index)
     {
-        Image buttonImage;
-        if (index == question.GetCorrectAnswerIndex())
-        {
-            questionText.text = "Tačno!";
-            buttonImage = answerButtons[index].GetComponent<Image>();
-            buttonImage.sprite = correctAnswerSprite;
-        }
-        else
-        {
-            questionText.text = "Tačan odgovor je\n" + question.GetAnswer(question.GetCorrectAnswerIndex());
-            buttonImage = answerButtons[question.GetCorrectAnswerIndex()].GetComponent<Image>();
-            buttonImage.sprite = correctAnswerSprite;
-        }
+        hasAnsweredEarly = true;
+        DisplayAnswer(index);
         SetButtonState(false);
+        Timer.instance.CancelTimer();
     }
 
     private void DisplayQuestion()
     {
-        questionText.text = question.GetQuestion();
+        questionText.text = currentQuestion.GetQuestion();
 
         for (int i = 0; i < answerButtons.Length; i++)
         {
             TextMeshProUGUI buttonText = answerButtons[i].GetComponentInChildren<TextMeshProUGUI>();
-            buttonText.text = question.GetAnswer(i);
+            buttonText.text = currentQuestion.GetAnswer(i);
         }
     }
 
