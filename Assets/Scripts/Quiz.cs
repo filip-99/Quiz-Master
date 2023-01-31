@@ -9,7 +9,7 @@ public class Quiz : MonoBehaviour
     [Header("Questions")]
     [SerializeField] TextMeshProUGUI questionText;
     // Potrebna je lista koja će sadržati pitanja
-    [SerializeField] List<QuestionSO> questions;
+    [SerializeField] List<QuestionSO> questions = new List<QuestionSO>();
     // Promenjiva će sadržati određeno pitanje iz liste
     QuestionSO currentQuestion;
 
@@ -29,7 +29,6 @@ public class Quiz : MonoBehaviour
 
     void Start()
     {
-        GetNextQuestion();
         timer = FindObjectOfType<Timer>();
     }
 
@@ -69,9 +68,23 @@ public class Quiz : MonoBehaviour
 
     void GetNextQuestion()
     {
-        SetButtonState(true);
-        DisplayQuestion();
-        SetDefaultButtonSprites();
+        if (questions.Count > 0)
+        {
+            SetButtonState(true);
+            DisplayQuestion();
+            SetDefaultButtonSprites();
+            GetRandomQuestion();
+        }
+    }
+
+    // Generisanje slučajnog odgovora
+    private void GetRandomQuestion()
+    {
+        int index = Random.Range(0, questions.Count);
+        currentQuestion = questions[index];
+        // U koliko pitanje postoji u listi ukloni ga
+        if (questions.Contains(currentQuestion))
+            questions.Remove(currentQuestion);
     }
 
     public void OnAnswerSelected(int index)

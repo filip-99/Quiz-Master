@@ -1088,7 +1088,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   questionText: {fileID: 1782651378}
-  question: {fileID: 11400000, guid: 2300af69419e4ea4c871b18ac4f38b6f, type: 2}
+  questions:
+  - {fileID: 11400000, guid: 2300af69419e4ea4c871b18ac4f38b6f, type: 2}
+  - {fileID: 11400000, guid: 46318f5a43cb2b048a9dfb682180f2fa, type: 2}
+  - {fileID: 11400000, guid: f8ec9fd9e4743dd498e538f223a8ac81, type: 2}
+  - {fileID: 11400000, guid: 48f4d12a9db2cfc46a300762201fcbcb, type: 2}
+  - {fileID: 11400000, guid: e13bd56af4b2afb42b6662201ad5e565, type: 2}
+  - {fileID: 11400000, guid: 7e13cb5cb62de134691f71dd6187592c, type: 2}
   answerButtons:
   - {fileID: 1202400539}
   - {fileID: 1334117739}
