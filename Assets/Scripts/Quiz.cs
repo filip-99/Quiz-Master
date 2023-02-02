@@ -6,6 +6,8 @@ using UnityEngine.UI;
 
 public class Quiz : MonoBehaviour
 {
+    public static Quiz instance;
+
     [Header("Questions")]
     [SerializeField] TextMeshProUGUI questionText;
     // Potrebna je lista koja će sadržati pitanja
@@ -34,10 +36,12 @@ public class Quiz : MonoBehaviour
     public bool isComplete;
 
 
-    private void Start()
+    private void Awake()
     {
+        instance = this;
         progressBar.maxValue = questions.Count;
         progressBar.value = 0;
+
     }
 
 
@@ -46,6 +50,12 @@ public class Quiz : MonoBehaviour
         timerImage.fillAmount = Timer.instance.fillFraction;
         if (Timer.instance.loadNextQuestion)
         {
+            if (progressBar.value == progressBar.maxValue)
+            {
+                isComplete = true;
+                return;
+            }
+
             hasAnsweredEarly = false;
             GetNextQuestion();
             Timer.instance.loadNextQuestion = false;
@@ -65,11 +75,6 @@ public class Quiz : MonoBehaviour
         Timer.instance.CancelTimer();
         // Setujemo tekst za skor
         scoreText.text = "Score: " + ScoreKeeper.instance.CalculateScore() + "%";
-
-        if (progressBar.value == progressBar.maxValue)
-        {
-            isComplete = true;
-        }
     }
 
     void DisplayAnswer(int index)
