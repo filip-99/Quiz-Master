@@ -1100,8 +1100,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e00311b12aae67c40bd07d261e3751bc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  timeToCompleteQuestion: 20
-  timeToShowCorrectAnswer: 5
+  timeToCompleteQuestion: 15
+  timeToShowCorrectAnswer: 4
   isAnsweringQuestion: 0
   fillFraction: 0
   loadNextQuestion: 0
@@ -1381,6 +1381,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 48f4d12a9db2cfc46a300762201fcbcb, type: 2}
   - {fileID: 11400000, guid: e13bd56af4b2afb42b6662201ad5e565, type: 2}
   - {fileID: 11400000, guid: 7e13cb5cb62de134691f71dd6187592c, type: 2}
+  - {fileID: 11400000, guid: 9c3bdb0a8e03d424f8c2e12e170cfc55, type: 2}
   answerButtons:
   - {fileID: 1202400539}
   - {fileID: 1334117739}
@@ -2307,9 +2308,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Congratulations!
-
-    You scored 85%'
+  m_text: "\u010Cestitamo!\nVa\u0161 skor je 85%"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}

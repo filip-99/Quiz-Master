@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
@@ -17,7 +17,7 @@ public class EndScreen : MonoBehaviour
 
     public void ShowFinalScore()
     {
-        finalScoreText.text = "Congratulations!\nYou scored " + ScoreKeeper.instance.CalculateScore() + "%";
+        finalScoreText.text = "Čestitamo!\nVaš skor je: " + ScoreKeeper.instance.CalculateScore() + "%";
     }
 
 }
