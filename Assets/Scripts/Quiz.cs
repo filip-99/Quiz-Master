@@ -27,8 +27,9 @@ public class Quiz : MonoBehaviour
     [Header("Timer")]
     [SerializeField] Image timerImage;
 
-    [Header("Scoring")]
+    [Header("Scoring Data")]
     [SerializeField] TextMeshProUGUI scoreText;
+
 
     [Header("ProgressBar")]
     [SerializeField] Slider progressBar;
@@ -39,6 +40,7 @@ public class Quiz : MonoBehaviour
     private void Awake()
     {
         instance = this;
+        // Progres bar zavisi od broja pitanja, pa je jednak ukupnom broju
         progressBar.maxValue = questions.Count;
         progressBar.value = 0;
 
