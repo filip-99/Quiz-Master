@@ -5,7 +5,16 @@ using TMPro;
 
 public class EndScreen : MonoBehaviour
 {
-    public static EndScreen instance;
+    static EndScreen instance;
+    public static EndScreen Instance
+    {
+        get
+        {
+            if (instance == null)
+                Debug.Log("EndScreen is null");
+            return instance;
+        }
+    }
 
     [SerializeField] TextMeshProUGUI finalScoreText;
 
@@ -17,7 +26,7 @@ public class EndScreen : MonoBehaviour
 
     public void ShowFinalScore()
     {
-        finalScoreText.text = "Čestitamo!\nVaš skor je: " + ScoreKeeper.instance.CalculateScore() + "%";
+        finalScoreText.text = "Čestitamo!\nVaš skor je: " + ScoreKeeper.Instance.CalculateScore() + "%";
     }
 
 }

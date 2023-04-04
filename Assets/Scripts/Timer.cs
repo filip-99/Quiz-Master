@@ -6,7 +6,16 @@ using UnityEngine.UI;
 public class Timer : MonoBehaviour
 {
 
-    public static Timer instance;
+    static Timer instance;
+    public static Timer Instance
+    {
+        get
+        {
+            if (instance == null)
+                Debug.Log("Timer is null");
+            return instance;
+        }
+    }
 
     [SerializeField] float timeToCompleteQuestion = 30f;
     [SerializeField] float timeToShowCorrectAnswer = 10f;
@@ -25,7 +34,7 @@ public class Timer : MonoBehaviour
 
     void Update()
     {
-        if (Quiz.instance.gameObject.activeSelf == true)
+        if (Quiz.Instance.gameObject.activeSelf == true)
             UpdateTimer();
     }
 

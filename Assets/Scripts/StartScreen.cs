@@ -7,25 +7,27 @@ using UnityEngine.UI;
 
 public class StartScreen : MonoBehaviour
 {
-    public static StartScreen instance;
+    static StartScreen instance;
+    public static StartScreen Instance
+    {
+        get
+        {
+            if (instance == null)
+                Debug.Log("StartScreen is null");
+            return instance;
+        }
+    }
 
     [Header("UI Components")]
-    [SerializeField]
-    TextMeshProUGUI yourName;
-    [SerializeField]
-    TextMeshProUGUI yourEmail;
-    [SerializeField]
-    TMP_InputField nameInput;
-    [SerializeField]
-    TMP_InputField emailInput;
+    public TextMeshProUGUI yourName;
+    public TextMeshProUGUI yourEmail;
+    public TMP_InputField nameInput;
+    public TMP_InputField emailInput;
     [SerializeField]
     Button playButton;
 
     [Header("Keyboard")]
-    [SerializeField]
-    Button[] keyboard_part = new Button[12];
-    [SerializeField]
-    GameObject keyboard;
+    public GameObject virtualKeyboard;
 
     private void Awake()
     {
@@ -33,19 +35,18 @@ public class StartScreen : MonoBehaviour
     }
     void Start()
     {
-        nameInput.characterLimit = 5;
+        nameInput.characterLimit = 8;
     }
 
     void Update()
     {
         FilledFields();
-        ShowKeyboard();
     }
 
     public void StartQuiz()
     {
         gameObject.SetActive(false);
-        Quiz.instance.gameObject.SetActive(true);
+        Quiz.Instance.gameObject.SetActive(true);
     }
 
     // Metoda proverava da li su polja za unos popunjena
@@ -59,39 +60,7 @@ public class StartScreen : MonoBehaviour
         {
             playButton.interactable = false;
         }
-    }
 
-    // Metoda za prikaz tastature
-    private void ShowKeyboard()
-    {
-        if (nameInput.isFocused)
-        {
-            KeyboardButtons(true, true);
-        }
-        else if (emailInput.isFocused)
-        {
-            KeyboardButtons(true, false);
-        }
+        Keyboard.Instance.ShowKeyboard();
     }
-
-    //------------------------------------------------------------------------------------------------
-    public void KeyboardButtons(bool check, bool name)
-    {
-        if (name)
-        {
-            foreach (Button bt in keyboard_part)
-            {
-                bt.interactable = false;
-            }
-        }
-        else
-        {
-            foreach (Button bt in keyboard_part)
-            {
-                bt.interactable = true;
-            }
-        }
-        keyboard.SetActive(check);
-    }
-
 }

@@ -6,7 +6,16 @@ using UnityEngine.UI;
 
 public class Quiz : MonoBehaviour
 {
-    public static Quiz instance;
+    static Quiz instance;
+    public static Quiz Instance
+    {
+        get
+        {
+            if (instance == null)
+                Debug.Log("Quiz is null");
+            return instance;
+        }
+    }
 
     [Header("Questions")]
     [SerializeField] TextMeshProUGUI questionText;
@@ -49,8 +58,8 @@ public class Quiz : MonoBehaviour
 
     void Update()
     {
-        timerImage.fillAmount = Timer.instance.fillFraction;
-        if (Timer.instance.loadNextQuestion)
+        timerImage.fillAmount = Timer.Instance.fillFraction;
+        if (Timer.Instance.loadNextQuestion)
         {
             if (progressBar.value == progressBar.maxValue)
             {
@@ -60,9 +69,9 @@ public class Quiz : MonoBehaviour
 
             hasAnsweredEarly = false;
             GetNextQuestion();
-            Timer.instance.loadNextQuestion = false;
+            Timer.Instance.loadNextQuestion = false;
         }
-        else if (!hasAnsweredEarly && !Timer.instance.isAnsweringQuestion)
+        else if (!hasAnsweredEarly && !Timer.Instance.isAnsweringQuestion)
         {
             DisplayAnswer(-1);
             SetButtonState(false);
@@ -74,9 +83,9 @@ public class Quiz : MonoBehaviour
         hasAnsweredEarly = true;
         DisplayAnswer(index);
         SetButtonState(false);
-        Timer.instance.CancelTimer();
+        Timer.Instance.CancelTimer();
         // Setujemo tekst za skor
-        scoreText.text = "Score: " + ScoreKeeper.instance.CalculateScore() + "%";
+        scoreText.text = "Score: " + ScoreKeeper.Instance.CalculateScore() + "%";
     }
 
     void DisplayAnswer(int index)
@@ -88,7 +97,7 @@ public class Quiz : MonoBehaviour
             buttonImage = answerButtons[index].GetComponent<Image>();
             buttonImage.sprite = correctAnswerSprite;
             // Kada tačno odgovorimo na pitanje povećaćemo vrednost tačnih odgovora
-            ScoreKeeper.instance.IncrementCorrectAnswers();
+            ScoreKeeper.Instance.IncrementCorrectAnswers();
         }
         else
         {
@@ -107,7 +116,7 @@ public class Quiz : MonoBehaviour
             GetRandomQuestion();
             DisplayQuestion();
             progressBar.value++;
-            ScoreKeeper.instance.IncrementQuestionsSeen();
+            ScoreKeeper.Instance.IncrementQuestionsSeen();
         }
     }
 

@@ -7,26 +7,39 @@ using UnityEngine.SceneManagement;
 public class GameManager : MonoBehaviour
 {
 
+    private static GameManager instance;
+
+    public static GameManager Instance
+    {
+        get
+        {
+            // Vrši se provera da li je kreirana instanca koja referencira na klasu GameManager
+            if (instance == null)
+                Debug.Log("GameManager is null");
+            return instance;
+        }
+    }
+
     // Potrebna je promenjiva koja će uzimati vrednost najboljeg skora iz prefabs
     int highScore;
     HighscoreHandler highscoreHandler;
 
     void Start()
     {
-        StartScreen.instance.gameObject.SetActive(true);
+        StartScreen.Instance.gameObject.SetActive(true);
         // Kada se igra startuje panel sa pitanjima se aktivira
-        Quiz.instance.gameObject.SetActive(false);
+        Quiz.Instance.gameObject.SetActive(false);
         // End skrin će biti isključen
-        EndScreen.instance.gameObject.SetActive(false);
+        EndScreen.Instance.gameObject.SetActive(false);
     }
 
     void Update()
     {
-        if (Quiz.instance.isComplete)
+        if (Quiz.Instance.isComplete)
         {
-            Quiz.instance.gameObject.SetActive(false);
-            EndScreen.instance.gameObject.SetActive(true);
-            EndScreen.instance.ShowFinalScore();
+            Quiz.Instance.gameObject.SetActive(false);
+            EndScreen.Instance.gameObject.SetActive(true);
+            EndScreen.Instance.ShowFinalScore();
         }
     }
 
