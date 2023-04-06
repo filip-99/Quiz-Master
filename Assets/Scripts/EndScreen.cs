@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using UnityEngine.SocialPlatforms.Impl;
+using System;
+using UnityEngine.EventSystems;
 
 public class EndScreen : MonoBehaviour
 {
@@ -16,8 +19,11 @@ public class EndScreen : MonoBehaviour
         }
     }
 
-    [SerializeField] TextMeshProUGUI finalScoreText;
+    [SerializeField]
+    TextMeshProUGUI finalScoreText;
 
+    [SerializeField]
+    HighscoreHandler highscoreHandler;
 
     private void Awake()
     {
@@ -27,6 +33,16 @@ public class EndScreen : MonoBehaviour
     public void ShowFinalScore()
     {
         finalScoreText.text = "Čestitamo!\nVaš skor je: " + ScoreKeeper.Instance.CalculateScore() + "%";
+
+        // Potrebna je metoda koja će uporediti postignut skor, sa najvećim skorom
+        ScoreIsHigher();
     }
 
+    private void ScoreIsHigher()
+    {
+        if (ScoreKeeper.Instance.CalculateScore() > 0)
+        {
+            highscoreHandler.SaveHighscoreData(StartScreen.Instance.nameInput.text, ScoreKeeper.Instance.CalculateScore().ToString());
+        }
+    }
 }

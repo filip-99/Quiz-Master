@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Security.Cryptography;
 using System.Text;
+using TMPro;
 using Unity.IO.LowLevel.Unsafe;
 using Unity.VisualScripting;
 //using UnityEditor.PackageManager.Requests;
@@ -18,6 +19,17 @@ using UnityEngine.UI;
 public class HighscoreHandler : MonoBehaviour
 {
 
+    private static HighscoreHandler instance;
+    public static HighscoreHandler Instance
+    {
+        get
+        {
+            if (instance == null)
+                Debug.Log("HighscoreHandler is null");
+            return instance;
+        }
+    }
+
     // Potreban je link do podataka, da bi ga dodelili API-ju
     private string URL = "https://tas.blockchain-servers.world:443/v1/chain/get_table_rows";
     //private string URL_PUSH_ACTION = "https://websocket.inery.io:443/insertscore";
@@ -26,98 +38,22 @@ public class HighscoreHandler : MonoBehaviour
     private AesEncryption encrypt = new AesEncryption("CBC", 256);
     private string private_key = "5JoHr2DdCjvCHeh8o7UoWyEKMhgZQGMu";
 
-    // Potrebna je lista koja će sadržati visoke rezultate
     List<HighscoreElement> highscoreList = new List<HighscoreElement>();
-    // Potrebno je definisati maksimalan broj elemenata u listi
-    public int maxCount = 7;
-    // Potrebno je definisati ime datoteke
-    public string filename;
+    private int maxCount = 7;
+    private string filename;
 
-    // Delegati se razlikuju od promenjivih po tome što delegati sadrže funkcije, dok promenjive sadrže podatke
     public delegate void OnHighscoreListChanged(List<HighscoreElement> list);
-
-    // Potrebno je kreirati događaj za delegata i sa njim kontrolišemo metode koje se izvršavaju
-    // event je statičan, tako da u drugim klasama ne moramo instancirati objekat ove klase
-    // Tipa je delegata, koji sadrži reference na metode
     public static event OnHighscoreListChanged onHighscoreListChanged;
 
-    private void Start()
+    private void Awake()
     {
-        // Pri pokretanju programa potrebno je da učitamo podatke
-        //StartCoroutine(GetDatas());
+        instance = this;
     }
 
-    /*
-    // Za uzimanje podataka pomoću API-ja koristimo sledeću metodu
-    IEnumerator GetDatas()
-    {
-        // Potrebno je da definišemo zahtev
-        using (UnityWebRequest request = UnityWebRequest.Get(URL))
-        {
-            // Šaljemo zahtev
-            yield return request.SendWebRequest();
-
-            // Kada pošaljemo zahtev proveravamo vezu sa "serverom"
-            if (request.result == UnityWebRequest.Result.ConnectionError)
-                Debug.LogError(request.error);
-            // U koliko nemamo grešku dodeljujemo vrednost promenjivoj json
-            else
-            {
-                // Samo request.downloadHandler.text sadrži podatke u JSON formatu
-                string json = request.downloadHandler.text;
-                // Sada je potrebno razčlaniti podatke
-                SimpleJSON.JSONNode status = SimpleJSON.JSON.Parse(json);
-
-                // Razložene podatke dodeljujemo elementu pojedinačnoi smeštamo u listu
-                for (int i = 0; i < status.Count; i++)
-                {
-                    HighscoreElement el = new HighscoreElement(status[i]["playerName"], status[i]["points"]);
-                    highscoreList.Add(el);
-                }
-
-                if (onHighscoreListChanged != null)
-                {
-                    onHighscoreListChanged.Invoke(highscoreList);
-                }
-            }
-        }
-    }
-    */
-    // Potrebna je metoda za čuvanje podataka na serveru
     IEnumerator PostData()
     {
         highscoreList.Clear();
-        // Potrebna nam je pomoćna promenjia za postavljanje podataka na WEB Server, pored API-ja
-        /*using (UnityWebRequest request = UnityWebRequest.Post(URL, "{\"code\":\"inerygame\",\"table\":\"scores\",\"scope\":\"inerygame\",\"lower_bound\":\"0\",\"limit\":\"" + maxCount + "\",\"json\":\"true\"}"))
-        {
-            yield return request.SendWebRequest();
-            if (request.result == UnityWebRequest.Result.ConnectionError)
-                Debug.LogError(request.error);
-            else
-            {
-                Debug.Log(request.downloadHandler.text);
-                string json = request.downloadHandler.text;
-                JSONNode status = SimpleJSON.JSON.Parse(json);
-                // Da bi izostavili prvi element, potrebno je da uđemo u objekat JSONa i pokupimo podatke
-                foreach (JSONNode node in status["rows"])
-                {
-                    HighscoreElement ellement = new HighscoreElement(node["username"], node["score"]);
-                    highscoreList.Add(ellement);
-                }
 
-                while (highscoreList.Count > maxCount)
-                {
-                    highscoreList.RemoveAt(maxCount);
-                }
-
-                if (onHighscoreListChanged != null)
-                {
-                    onHighscoreListChanged.Invoke(highscoreList);
-                }
-            }
-
-
-        }*/
         var request = new UnityWebRequest(URL, "POST");
         byte[] bodyRaw = Encoding.UTF8.GetBytes("{\"code\":\"inerygame\",\"table\":\"scores\",\"scope\":\"inerygame\",\"lower_bound\":\"0\",\"limit\":\"" + maxCount + "\",\"json\":\"true\"}");
         request.uploadHandler = (UploadHandler)new UploadHandlerRaw(bodyRaw);
@@ -131,10 +67,8 @@ public class HighscoreHandler : MonoBehaviour
                 Debug.LogError(request.error);
             else
             {
-                //Debug.Log(request.downloadHandler.text);
                 string json = request.downloadHandler.text;
                 JSONNode status = SimpleJSON.JSON.Parse(json);
-                // Da bi izostavili prvi element, potrebno je da uđemo u objekat JSONa i pokupimo podatke
                 foreach (JSONNode node in status["rows"])
                 {
                     HighscoreElement ellement = new HighscoreElement(node["username"], node["score"]);
@@ -158,12 +92,9 @@ public class HighscoreHandler : MonoBehaviour
 
     //--------------------- POST METODA ---------------------
 
-    IEnumerator InsertData(string username, string score, string coins)
+    IEnumerator InsertData(string username, string score)
     {
-        // Potrebna nam je pomoćna promenjia za postavljanje podataka na WEB Server, pored API-ja
-        //Staro System.Text.Encoding.UTF8.GetString(encrypt.Encrypt("{\"account\":\"inerygame\",\"action\":\"insertscore\",\"data\":{\"username\":\"" + username + "\", \"score\":\"" + score + "\", \"coins\":\"" + coins + "\"}}", private_key))
-        //EncryptString("{\"type\": \"push_action\",\"action_name\": \"insertscore\",\"account\": \"inerygame\",\"data\": {\"username\" : \"aaa\", \"score\" : 55, \"coins\" : 5}}", private_key, "iLHtRkhssiB2KTvY")
-        string req = "{\"request\": \"" + EncryptString("{\"type\": \"push_action\",\"action_name\": \"insertscore\",\"account\": \"inerygame\",\"data\": {\"username\" : \"" + username + "\", \"score\" : " + score + ", \"coins\" : " + coins + "}}", private_key, "iLHtRkhssiB2KTvY") + "\"}";
+        string req = "{\"request\": \"" + EncryptString("{\"type\": \"push_action\",\"action_name\": \"insertscore\",\"account\": \"inerygame\",\"data\": {\"username\" : \"" + username + "}}", private_key, "iLHtRkhssiB2KTvY") + "\"}";
 
         using (UnityWebRequest request = UnityWebRequest.Put(URL_PUSH_ACTION, req))
         {
@@ -260,40 +191,10 @@ public class HighscoreHandler : MonoBehaviour
     {
         StartCoroutine(PostData());
     }
-    public void SaveHighscoreData(string username, string score, string coins)
+    public void SaveHighscoreData(string username, string score)
     {
-        StartCoroutine(InsertData(username, score, coins));
+        StartCoroutine(InsertData(username, score));
     }
-
-    //-------------------------------------------------------------------------------------------------------------------------------
-    /*
-        // Potrebne su metode za učitavanje i čuvanje podataka u listu:
-        private void SaveHighscore()
-        {
-            // Pozivamo metodu iz statik klase FileHendler, za čuvanje podataka u JSON fajl preko liste
-            // Za parametre navodimo definisanu listu i ime datoteke
-            FileHendler.SaveToJSON<HighscoreElement>(highscoreList, filename);
-        }
-
-        private void LoadHighscores()
-        {
-            // Za čitanje podataka iz JSON fajla koristimo drugu metodu iz iste klase FileHendler
-            // highscoreList = FileHendler.ReadFromJSON<HighscoreElement>(filename);
-
-            // U koliko lista sadrži više elemenata od broja elemenata zadatih promenjivom maxCount izvršavaće se sledeći kod
-            while (highscoreList.Count > maxCount)
-            {
-                // RemoveAt() - metoda briše element na zadatoj poziciji
-                highscoreList.RemoveAt(maxCount);
-            }
-
-            // Potrebno je da aktiviramo delegat u koliko nije null tj. u koliko mu je dodeljena metoda
-            if (onHighscoreListChanged != null)
-            {
-                onHighscoreListChanged.Invoke(highscoreList);
-            }
-        }
-    */
 
     public static string Decrypt(string cipherData, string keyString, string ivString)
     {
@@ -379,4 +280,8 @@ public class HighscoreHandler : MonoBehaviour
         return encrypted;
     }
 
+    internal void Subscribe(string text, TMP_InputField emailInput, TextMeshProUGUI message)
+    {
+        throw new NotImplementedException();
+    }
 }

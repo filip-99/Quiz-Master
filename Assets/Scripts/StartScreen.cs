@@ -1,7 +1,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using TMPro;
+using UnityEditor.VersionControl;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -23,8 +25,17 @@ public class StartScreen : MonoBehaviour
     public TextMeshProUGUI yourEmail;
     public TMP_InputField nameInput;
     public TMP_InputField emailInput;
+
     [SerializeField]
     Button playButton;
+
+    [Header("MessagePanel")]
+    [SerializeField]
+    private GameObject MessagePanel;
+    [SerializeField]
+    private Button cancelButton;
+    [SerializeField]
+    private TextMeshProUGUI message;
 
     [Header("Keyboard")]
     public GameObject virtualKeyboard;
@@ -62,5 +73,27 @@ public class StartScreen : MonoBehaviour
         }
 
         Keyboard.Instance.ShowKeyboard();
+    }
+
+    // Metoda za pušovanje meila
+    public void Subscribe()
+    {
+        Regex emailRegex = new Regex(@"^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$", RegexOptions.IgnoreCase);
+        message.text = "";
+        if (emailRegex.IsMatch(emailInput.text))
+        {
+            HighscoreHandler.Instance.Subscribe(emailInput.text, emailInput, message);
+        }
+        else
+        {
+            message.text = "The email is not valid!";
+        }
+        MessagePanel.SetActive(true);
+    }
+
+    // Zatvaranje panela
+    public void ClickCancel()
+    {
+        MessagePanel.SetActive(false);
     }
 }

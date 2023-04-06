@@ -20,9 +20,13 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    void Awake()
+    {
+        instance = this;
+    }
+
     // Potrebna je promenjiva koja će uzimati vrednost najboljeg skora iz prefabs
     int highScore;
-    HighscoreHandler highscoreHandler;
 
     void Start()
     {
