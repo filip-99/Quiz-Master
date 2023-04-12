@@ -4,6 +4,7 @@ using System.Text.RegularExpressions;
 using TMPro;
 using UnityEditor.VersionControl;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class RegistrationScreen : MonoBehaviour
@@ -39,16 +40,7 @@ public class RegistrationScreen : MonoBehaviour
 
     void Update()
     {
-        IsFocusedInputField();
         FieldFilled();
-    }
-
-    void IsFocusedInputField()
-    {
-        UIManager.Instance.virtualKeyboard.gameObject.SetActive(false);
-        // Pronalaženje objekta koji ima nosi skriptu UserInput(tastatura) i setovanje tog objekta kao podelement ovog objekta
-        UIManager.Instance.virtualKeyboard.gameObject.transform.SetParent(transform);
-        UIManager.Instance.ShowKeyboard();
     }
 
     void FieldFilled()

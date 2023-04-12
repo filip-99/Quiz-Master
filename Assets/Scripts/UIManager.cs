@@ -57,6 +57,8 @@ public class UIManager : MonoBehaviour
         LoginScreen.Instance.gameObject.SetActive(false);
 
         StartScreen.Instance.gameObject.SetActive(true);
+
+        HideKeyboard();
     }
 
     // Isključivanje panela za obaveštenje
@@ -65,16 +67,16 @@ public class UIManager : MonoBehaviour
         messagePanel.SetActive(false);
     }
 
-    // Metoda za prikaz tastature
-    public void ShowKeyboard()
+    // Metoda za prikaz/sakrivanje tastature
+    public void ShowKeyboard(Transform transform)
     {
-        if ((RegistrationScreen.Instance.usernameInput.isFocused))
-        {
-            virtualKeyboard.SetActive(true);
-        }
-        else if ((RegistrationScreen.Instance.emailInput.isFocused) || (RegistrationScreen.Instance.passwordInput.isFocused) || (RegistrationScreen.Instance.confirmPasswordInput.isFocused))
-        {
-            virtualKeyboard.SetActive(true);
-        }
+        virtualKeyboard.SetActive(true);
+        virtualKeyboard.gameObject.transform.SetParent(transform);
+    }
+
+    public void HideKeyboard()
+    {
+        virtualKeyboard.transform.SetParent(null);
+        virtualKeyboard.SetActive(false);
     }
 }

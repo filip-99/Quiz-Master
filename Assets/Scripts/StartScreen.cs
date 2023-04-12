@@ -26,6 +26,8 @@ public class StartScreen : MonoBehaviour
         Quiz.Instance.gameObject.SetActive(false);
         RegistrationScreen.Instance.gameObject.SetActive(false);
         LoginScreen.Instance.gameObject.SetActive(true);
+
+        UIManager.Instance.ShowKeyboard(LoginScreen.Instance.transform);
     }
 
     public void Registration()
@@ -34,5 +36,7 @@ public class StartScreen : MonoBehaviour
         Quiz.Instance.gameObject.SetActive(false);
         LoginScreen.Instance.gameObject.SetActive(false);
         RegistrationScreen.Instance.gameObject.SetActive(true);
+
+        UIManager.Instance.ShowKeyboard(RegistrationScreen.Instance.transform);
     }
 }

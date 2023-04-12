@@ -22,6 +22,7 @@ public class LoginScreen : MonoBehaviour
 
     [Header("UI Components")]
     public TMP_InputField usernameInput;
+    public TMP_InputField passwordInput;
     [SerializeField]
     Button playButton;
 
@@ -56,6 +57,6 @@ public class LoginScreen : MonoBehaviour
         {
             playButton.interactable = false;
         }
-        UIManager.Instance.ShowKeyboard();
+        // UIManager.Instance.ShowKeyboard();
     }
 }
