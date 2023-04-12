@@ -14,11 +14,11 @@ public class UserInput : MonoBehaviour
 
     void Update()
     {
-        if (StartScreen.Instance.nameInput.isFocused)
+        if (RegistrationScreen.Instance.usernameInput.isFocused)
         {
             focusElement = 1;
         }
-        else if (StartScreen.Instance.emailInput.isFocused)
+        else if (RegistrationScreen.Instance.usernameInput.isFocused)
         {
             focusElement = 2;
         }
@@ -34,7 +34,7 @@ public class UserInput : MonoBehaviour
                 wordNameIndex--;
                 if (wordName.Length > 0)
                     wordName = wordName.Remove(wordName.Length - 1, 1);
-                StartScreen.Instance.nameInput.text = wordName.ToString();
+                RegistrationScreen.Instance.usernameInput.text = wordName.ToString();
             }
             else if (focusElement == 2)
             {
@@ -43,7 +43,7 @@ public class UserInput : MonoBehaviour
                     wordEmailIndex--;
                     if (wordEmail.Length > 0)
                         wordEmail = wordEmail.Remove(wordEmail.Length - 1, 1);
-                    StartScreen.Instance.emailInput.text = wordEmail;
+                    RegistrationScreen.Instance.usernameInput.text = wordEmail;
                 }
             }
         }
@@ -53,13 +53,13 @@ public class UserInput : MonoBehaviour
             {
                 wordNameIndex++;
                 wordName = wordName + alphabet;
-                StartScreen.Instance.nameInput.text = wordName;
+                RegistrationScreen.Instance.usernameInput.text = wordName;
             }
             else if (focusElement == 2)
             {
                 wordEmailIndex++;
                 wordEmail = wordEmail + alphabet;
-                StartScreen.Instance.emailInput.text = wordEmail;
+                RegistrationScreen.Instance.usernameInput.text = wordEmail;
             }
         }
     }

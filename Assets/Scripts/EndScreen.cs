@@ -22,9 +22,6 @@ public class EndScreen : MonoBehaviour
     [SerializeField]
     TextMeshProUGUI finalScoreText;
 
-    [SerializeField]
-    HighscoreHandler highscoreHandler;
-
     private void Awake()
     {
         instance = this;
@@ -33,16 +30,13 @@ public class EndScreen : MonoBehaviour
     public void ShowFinalScore()
     {
         finalScoreText.text = "Čestitamo!\nVaš skor je: " + ScoreKeeper.Instance.CalculateScore() + "%";
-
-        // Potrebna je metoda koja će uporediti postignut skor, sa najvećim skorom
-        ScoreIsHigher();
     }
 
-    private void ScoreIsHigher()
-    {
-        if (ScoreKeeper.Instance.CalculateScore() > 0)
-        {
-            highscoreHandler.SaveHighscoreData(StartScreen.Instance.nameInput.text, ScoreKeeper.Instance.CalculateScore().ToString());
-        }
-    }
+    // rivate void ScoreIsHigher()
+    // 
+    //    if (ScoreKeeper.Instance.CalculateScore() > 0)
+    //    {
+    //        highscoreHandler.SaveHighscoreData(StartScreen.Instance.nameInput.text, ScoreKeeper.Instance.CalculateScore().ToString());
+    //    }
+    // 
 }

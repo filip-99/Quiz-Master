@@ -55,6 +55,10 @@ public class Quiz : MonoBehaviour
 
     }
 
+    void Start()
+    {
+        
+    }
 
     void Update()
     {

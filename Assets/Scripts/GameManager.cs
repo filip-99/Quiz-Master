@@ -28,15 +28,6 @@ public class GameManager : MonoBehaviour
     // Potrebna je promenjiva koja će uzimati vrednost najboljeg skora iz prefabs
     int highScore;
 
-    void Start()
-    {
-        StartScreen.Instance.gameObject.SetActive(true);
-        // Kada se igra startuje panel sa pitanjima se aktivira
-        Quiz.Instance.gameObject.SetActive(false);
-        // End skrin će biti isključen
-        EndScreen.Instance.gameObject.SetActive(false);
-    }
-
     void Update()
     {
         if (Quiz.Instance.isComplete)
