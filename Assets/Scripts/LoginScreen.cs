@@ -30,10 +30,6 @@ public class LoginScreen : MonoBehaviour
     {
         instance = this;
     }
-    void Start()
-    {
-        usernameInput.characterLimit = 8;
-    }
 
     void Update()
     {
@@ -42,14 +38,14 @@ public class LoginScreen : MonoBehaviour
 
     public void StartQuiz()
     {
-        gameObject.SetActive(false);
         Quiz.Instance.gameObject.SetActive(true);
+        gameObject.SetActive(false);
     }
 
     // Metoda proverava da li su polja za unos popunjena
     private void FilledFields()
     {
-        if (usernameInput.text != "" && usernameInput.text.Length > 1)
+        if ((usernameInput.text != "" && usernameInput.text.Length > 1) && (passwordInput.text != "" && passwordInput.text.Length > 1))
         {
             playButton.interactable = true;
         }
@@ -57,6 +53,5 @@ public class LoginScreen : MonoBehaviour
         {
             playButton.interactable = false;
         }
-        // UIManager.Instance.ShowKeyboard();
     }
 }

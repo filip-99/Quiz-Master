@@ -71,12 +71,24 @@ public class UIManager : MonoBehaviour
     public void ShowKeyboard(Transform transform)
     {
         virtualKeyboard.SetActive(true);
-        virtualKeyboard.gameObject.transform.SetParent(transform);
+        virtualKeyboard.transform.SetParent(transform);
     }
 
     public void HideKeyboard()
     {
         virtualKeyboard.transform.SetParent(null);
         virtualKeyboard.SetActive(false);
+    }
+
+    public void ShowPanel(Transform transform)
+    {
+        messagePanel.SetActive(true);
+        messagePanel.transform.SetParent(transform);
+    }
+
+    public void HidePanel(Transform transform)
+    {
+        messagePanel.transform.SetParent(null);
+        messagePanel.SetActive(false);
     }
 }

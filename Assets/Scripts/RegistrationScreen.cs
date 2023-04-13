@@ -1,3 +1,4 @@
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
@@ -57,40 +58,79 @@ public class RegistrationScreen : MonoBehaviour
 
     public void Registration()
     {
-        UsernameCheck();
-        EmailCheck();
+        if (!UsernameCheck() || !EmailCheck() || !PasswordCheck() || !CheckConfirmPassword())
+            return;
+        else
+        {
+            Debug.Log("Sve je u redu");
+        }
     }
 
-    private void UsernameCheck()
+    private bool UsernameCheck()
     {
         Regex usernameRegex = new Regex("^[a-zA-Z0-9]+$");
         UIManager.Instance.message.text = "";
 
-        if (usernameRegex.IsMatch(emailInput.text))
+        if (usernameRegex.IsMatch(usernameInput.text))
         {
-            Debug.Log("Validan meil");
+            Debug.Log("Validan username");
+            return true;
         }
         else
         {
-            UIManager.Instance.message.text = "The email is not valid!";
-            UIManager.Instance.messagePanel.SetActive(true);
+            UIManager.Instance.message.text = "The username is not valid!";
+            UIManager.Instance.ShowPanel(gameObject.transform);
+            return false;
         }
     }
 
-    public void EmailCheck()
+    public bool EmailCheck()
     {
         Regex emailRegex = new Regex(@"^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$", RegexOptions.IgnoreCase);
         UIManager.Instance.message.text = "";
-        if (emailRegex.IsMatch(emailInput.text) && (emailInput.text != ""))
+        if (emailRegex.IsMatch(emailInput.text))
         {
             Debug.Log("Validan meil");
+            return true;
         }
         else
         {
             UIManager.Instance.message.text = "The email is not valid!";
+            UIManager.Instance.ShowPanel(gameObject.transform);
+            return false;
         }
-        UIManager.Instance.messagePanel.SetActive(true);
     }
 
+    public bool PasswordCheck()
+    {
+        Regex passwordRegex = new Regex(@"^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$");
+        UIManager.Instance.message.text = "";
+        if (passwordRegex.IsMatch(passwordInput.text))
+        {
+            Debug.Log("Validan pasword");
+            return true;
+        }
+        else
+        {
+            // UIManager.Instance.message.text = "The password must be at least 6 characters long and consist of uppercase and lowercase letters, symbols, and numbers";
+            UIManager.Instance.message.text = "The password is not valid!";
+            UIManager.Instance.ShowPanel(gameObject.transform);
+            return false;
+        }
+    }
 
+    public bool CheckConfirmPassword()
+    {
+        if (passwordInput.text.Equals(confirmPasswordInput.text))
+        {
+            Debug.Log("Potvrđen password");
+            return true;
+        }
+        else
+        {
+            UIManager.Instance.message.text = "The password is not validddd!";
+            UIManager.Instance.ShowPanel(gameObject.transform);
+            return false;
+        }
+    }
 }
