@@ -9,6 +9,8 @@ using IneryLibrary.Core;
 using IneryLibrary;
 using System;
 using Random = UnityEngine.Random;
+using Json.Lib;
+using Unity.VisualScripting;
 
 public class Quiz : MonoBehaviour
 {
@@ -104,14 +106,31 @@ public class Quiz : MonoBehaviour
 
         try
         {
-            var result = await inery.GetTableRows<Question>(new GetTableRowsRequest()
+            var result = await inery.GetTableRows(new GetTableRowsRequest()
             {
                 json = true,
                 code = "quiz",
                 scope = "quiz",
-                table = "questions"
+                table = "questions",
+                index_position = "0",               // Ovaj parametar postavlja index poziciju redova koji se vraćaju.
+                key_type = "i64",                   // Ovaj parametar postavlja tip indeksa. - i64 - podržava ogromnu količinu celih brojeva
+                encode_type = "string",             // Ovaj parametar postavlja tip kodiranja za binarne podatke.
+                //lower_bound = usernameInput.text,   // Ovaj parametar postavlja donju granicu za izabranu vrednost indeksa.
+                //upper_bound = usernameInput.text,   // Ovaj parametar postavlja gornju granicu za izabranu vrednost indeksa.
+                limit = 1
             });
             Debug.Log(result.rows[0].ToString()); // poruka
+
+            // Create a JSON object from the JSON string
+            Question jsonObj = JsonConvert.DeserializeObject<Question>(result.rows[0].ToString());
+
+            // Get the answers list from the JSON object.
+
+
+            // Test
+            // string answers = jsonObj.answers[1];
+            // Debug.Log(answers);
+            // Debug.Log(jsonObj.question);
         }
         catch (Exception e)
         {
