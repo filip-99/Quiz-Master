@@ -12,10 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: be43ee90d5e408d4ebb44ec52b2e3e96, type: 3}
   m_Name: Question 4
   m_EditorClassIdentifier: 
-  question: Koja komedija je najpopularnija?
+  question: How fast is the typical blockchain technology?
   answers:
-  - 'Scary Movie '
-  - 'Forrest Gump '
-  - 'A Haunted House '
-  - Borat
+  - The typical throughput is 2000 TPS and the typical transaction time is  5 min
+  - The typical throughput is 224 TPS and the typical transaction time is 60 min
+  - The typical throughput is > 10000 TPS and the typical transaction time is < 0.5
+    sec
+  - "We can\u2019t be sure of the typical blockchain speed, since they are all really
+    fast"
   correctAnswerIndex: 1

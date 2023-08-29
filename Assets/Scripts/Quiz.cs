@@ -3,6 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
+using IneryLibrary.Core.Api.v1;
+using IneryLibrary.Core.Providers;
+using IneryLibrary.Core;
+using IneryLibrary;
+using System;
+using Random = UnityEngine.Random;
 
 public class Quiz : MonoBehaviour
 {
@@ -38,6 +44,7 @@ public class Quiz : MonoBehaviour
 
     [Header("Scoring Data")]
     [SerializeField] TextMeshProUGUI scoreText;
+    [SerializeField] TextMeshProUGUI usernameText;
 
 
     [Header("ProgressBar")]
@@ -57,7 +64,7 @@ public class Quiz : MonoBehaviour
 
     void Start()
     {
-        
+        GetQuestions();
     }
 
     void Update()
@@ -81,6 +88,39 @@ public class Quiz : MonoBehaviour
             SetButtonState(false);
         }
     }
+
+    // ---------------------------------------------------------------------------
+
+    public async void GetQuestions()
+    {
+
+        Inery inery = new Inery(new IneryConfigurator()
+        {
+            HttpEndpoint = "https://tas.blockchain-servers.world", //Mainnet
+            ChainId = "3b891f1a78a7c27cf5dbaa82d2f30f96d0452262a354b4995b88c162ab066eee",
+            ExpireSeconds = 60,
+            SignProvider = new DefaultSignProvider("5KftZF2nz6eiYy9ZBtGymj75XJWiKJk2f859qdc6kGGMb6boAkb")
+        });
+
+        try
+        {
+            var result = await inery.GetTableRows<Question>(new GetTableRowsRequest()
+            {
+                json = true,
+                code = "quiz",
+                scope = "quiz",
+                table = "questions"
+            });
+            Debug.Log(result.rows[0].ToString()); // poruka
+        }
+        catch (Exception e)
+        {
+            Debug.Log(e);
+        }
+
+    }
+
+    // ---------------------------------------------------------------------------
 
     public void OnAnswerSelected(int index)
     {
@@ -159,6 +199,12 @@ public class Quiz : MonoBehaviour
         {
             answerButtons[i].GetComponent<Image>().sprite = defaultAnswerSprite;
         }
+    }
+
+    // Metoda za setovanje usernamea
+    public void SetUsername(string username)
+    {
+        usernameText.text = username;
     }
 
 }

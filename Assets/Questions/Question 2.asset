@@ -12,10 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: be43ee90d5e408d4ebb44ec52b2e3e96, type: 3}
   m_Name: Question 2
   m_EditorClassIdentifier: 
-  question: Koji je najpopularniji horor film?
+  question: What are the two most typical consensus mechanisms in the blockchain
+    industry?
   answers:
-  - Citizen Kane
-  - Psycho
-  - 'The Exorcist '
-  - Split
-  correctAnswerIndex: 1
+  - Proof of Workload and Proof of Statics
+  - Proof of Work and Proof of Status
+  - Proof of Work and Proof of Stake
+  - Proof of Walk and Proof of Stalk
+  correctAnswerIndex: 2

@@ -7,6 +7,17 @@ using UnityEditor.VersionControl;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using System.Security.Cryptography;
+using System.Text;
+using IneryLibrary;
+using IneryLibrary.Core.Providers;
+using IneryLibrary.Core;
+using IneryLibrary.Core.Api.v1;
+using UnityEngine.SceneManagement;
+using Action = IneryLibrary.Core.Api.v1.Action;
+using static UnityEngine.RuleTile.TilingRuleOutput;
+using Unity.VisualScripting;
+using UnityEditor.PackageManager;
 
 public class RegistrationScreen : MonoBehaviour
 {
@@ -56,19 +67,59 @@ public class RegistrationScreen : MonoBehaviour
         }
     }
 
-    public void Registration()
+    public async void Registration()
     {
         if (!UsernameCheck() || !EmailCheck() || !PasswordCheck() || !CheckConfirmPassword())
             return;
         else
         {
-            Debug.Log("Sve je u redu");
+            // Inery - klasa za interakciju sa čejnom
+            // IneryConfigurator - klasa služi za konfigurisanje klase Inery sa čejnom
+            Inery inery = new Inery(new IneryConfigurator()
+            {
+                // HttpEndpoint - Postavlja se url za pristup API-ju blokčejna
+                HttpEndpoint = "https://tas.blockchain-servers.world", //Mainnet
+                // ChainId - Jedinstveni identifikator za povezivanje na inery čejn
+                ChainId = "3b891f1a78a7c27cf5dbaa82d2f30f96d0452262a354b4995b88c162ab066eee",
+                // ExpireSeconds - Broj sekundi trajanja transakcije - pre nego što istekne
+                ExpireSeconds = 60,
+                // SignProvider - Koristi DefaultSignProvider privatni ključ za potpisivanje transakcija
+                SignProvider = new DefaultSignProvider("5KftZF2nz6eiYy9ZBtGymj75XJWiKJk2f859qdc6kGGMb6boAkb")
+            });
+
+            try
+            {
+                var result = await inery.CreateTransaction(new IneryLibrary.Core.Api.v1.Transaction()
+                {
+                    actions = new List<IneryLibrary.Core.Api.v1.Action>()
+                    {
+                        new IneryLibrary.Core.Api.v1.Action()
+                        {
+                            account = "quiz",
+                            authorization = new List<PermissionLevel>()
+                            {
+                                new PermissionLevel() {actor = "quiz", permission = "active" }
+                            },
+                            name = "insertu",
+                            data = new { username = usernameInput.text, email = emailInput.text, password = HashPassword(passwordInput.text)}
+                        }
+                    }
+                });
+                Debug.Log("Uspešno ste se registrovali"); // poruka
+            }
+
+            catch (Exception e)
+            {
+                UIManager.Instance.message.text = "Username already exists";
+                UIManager.Instance.ShowPanel(gameObject.transform);
+                Debug.Log(e);
+            }
         }
     }
 
     private bool UsernameCheck()
     {
-        Regex usernameRegex = new Regex("^[a-zA-Z0-9]+$");
+        Regex usernameRegex = new Regex("^[a-z1-5.]{1,12}$");
         UIManager.Instance.message.text = "";
 
         if (usernameRegex.IsMatch(usernameInput.text))
@@ -78,7 +129,7 @@ public class RegistrationScreen : MonoBehaviour
         }
         else
         {
-            UIManager.Instance.message.text = "The username is not valid!";
+            UIManager.Instance.message.text = "Username can only have letters, numbers 1-5, dot, 1-12 chars.";
             UIManager.Instance.ShowPanel(gameObject.transform);
             return false;
         }
@@ -113,7 +164,7 @@ public class RegistrationScreen : MonoBehaviour
         else
         {
             // UIManager.Instance.message.text = "The password must be at least 6 characters long and consist of uppercase and lowercase letters, symbols, and numbers";
-            UIManager.Instance.message.text = "The password is not valid!";
+            UIManager.Instance.message.text = "Password must have a letter, a number, and be at least 8 characters long";
             UIManager.Instance.ShowPanel(gameObject.transform);
             return false;
         }
@@ -128,9 +179,20 @@ public class RegistrationScreen : MonoBehaviour
         }
         else
         {
-            UIManager.Instance.message.text = "The password is not validddd!";
+            UIManager.Instance.message.text = "The passwords do not match";
             UIManager.Instance.ShowPanel(gameObject.transform);
             return false;
+        }
+    }
+
+    // Metod za šiforvanje lozinke (SHA256)
+    public static string HashPassword(string password)
+    {
+        using (SHA256 sha256 = SHA256.Create())
+        {
+            byte[] passwordBytes = Encoding.UTF8.GetBytes(password);
+            byte[] hashBytes = sha256.ComputeHash(passwordBytes);
+            return Convert.ToBase64String(hashBytes);
         }
     }
 }

@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: be43ee90d5e408d4ebb44ec52b2e3e96, type: 3}
   m_Name: Question 5
   m_EditorClassIdentifier: 
-  question: Koja je najgledanija komedija?
+  question: Immutability means
   answers:
-  - 'Avengers: Endgame'
-  - Dumb and Dumber
-  - The Dictator
-  - Johnny English
+  - Not possible to alter
+  - Not able to be mutant
+  - Mutant powers
+  - Invisible
   correctAnswerIndex: 0

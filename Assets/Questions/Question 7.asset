@@ -12,10 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: be43ee90d5e408d4ebb44ec52b2e3e96, type: 3}
   m_Name: Question 7
   m_EditorClassIdentifier: 
-  question: Koji je najbolje ocenjen film na IMDB listi?
+  question: Why do people like blockchain so much?
   answers:
-  - The Godfather
-  - Pulp Fiction
-  - The Shawshank Redemption
-  - Fast & Furious
-  correctAnswerIndex: 2
+  - Because of its decentralized and secure nature
+  - Because of its centralized and secure nature
+  - Because they like Lego, so they definitely like blocks
+  - Because they like crypto
+  correctAnswerIndex: 0
