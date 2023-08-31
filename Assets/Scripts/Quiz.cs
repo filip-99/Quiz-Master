@@ -11,6 +11,8 @@ using System;
 using Random = UnityEngine.Random;
 using Json.Lib;
 using Unity.VisualScripting;
+using System.Threading.Tasks;
+using System.Linq;
 
 public class Quiz : MonoBehaviour
 {
@@ -28,9 +30,9 @@ public class Quiz : MonoBehaviour
     [Header("Questions")]
     [SerializeField] TextMeshProUGUI questionText;
     // Potrebna je lista koja će sadržati pitanja
-    [SerializeField] List<QuestionSO> questions = new List<QuestionSO>();
+    List<Question> questions = new List<Question>();
     // Promenjiva će sadržati određeno pitanje iz liste
-    QuestionSO currentQuestion;
+    Question currentQuestion;
 
     [Header("Answers")]
     [SerializeField] GameObject[] answerButtons;
@@ -54,19 +56,19 @@ public class Quiz : MonoBehaviour
 
     public bool isComplete;
 
-
     private void Awake()
     {
         instance = this;
-        // Progres bar zavisi od broja pitanja, pa je jednak ukupnom broju
-        progressBar.maxValue = questions.Count;
-        progressBar.value = 0;
-
     }
 
-    void Start()
+    private async void Start()
     {
-        GetQuestions();
+        questions = await GetQuestionsAsync();
+        Debug.Log(questions.Count);
+
+
+        progressBar.maxValue = questions.Count;
+        progressBar.value = 0;
     }
 
     void Update()
@@ -93,9 +95,8 @@ public class Quiz : MonoBehaviour
 
     // ---------------------------------------------------------------------------
 
-    public async void GetQuestions()
+    public async Task<List<Question>> GetQuestionsAsync()
     {
-
         Inery inery = new Inery(new IneryConfigurator()
         {
             HttpEndpoint = "https://tas.blockchain-servers.world", //Mainnet
@@ -112,31 +113,24 @@ public class Quiz : MonoBehaviour
                 code = "quiz",
                 scope = "quiz",
                 table = "questions",
-                index_position = "0",               // Ovaj parametar postavlja index poziciju redova koji se vraćaju.
-                key_type = "i64",                   // Ovaj parametar postavlja tip indeksa. - i64 - podržava ogromnu količinu celih brojeva
-                encode_type = "string",             // Ovaj parametar postavlja tip kodiranja za binarne podatke.
-                //lower_bound = usernameInput.text,   // Ovaj parametar postavlja donju granicu za izabranu vrednost indeksa.
-                //upper_bound = usernameInput.text,   // Ovaj parametar postavlja gornju granicu za izabranu vrednost indeksa.
+                index_position = "0",
+                key_type = "i64",
+                encode_type = "string",
                 limit = 1
             });
-            Debug.Log(result.rows[0].ToString()); // poruka
 
-            // Create a JSON object from the JSON string
-            Question jsonObj = JsonConvert.DeserializeObject<Question>(result.rows[0].ToString());
+            foreach (var row in result.rows)
+            {
+                questions.Add(JsonConvert.DeserializeObject<Question>(row.ToString()));
+            }
 
-            // Get the answers list from the JSON object.
-
-
-            // Test
-            // string answers = jsonObj.answers[1];
-            // Debug.Log(answers);
-            // Debug.Log(jsonObj.question);
+            return questions;
         }
         catch (Exception e)
         {
             Debug.Log(e);
+            return null;
         }
-
     }
 
     // ---------------------------------------------------------------------------
@@ -154,7 +148,8 @@ public class Quiz : MonoBehaviour
     void DisplayAnswer(int index)
     {
         Image buttonImage;
-        if (index == currentQuestion.GetCorrectAnswerIndex())
+        // 0 - Svako pitanje sa indeksom 0 je tačan odgovor
+        if (index == 0)
         {
             questionText.text = "Tačno!";
             buttonImage = answerButtons[index].GetComponent<Image>();
@@ -164,8 +159,10 @@ public class Quiz : MonoBehaviour
         }
         else
         {
-            questionText.text = "Tačan odgovor je\n" + currentQuestion.GetAnswer(currentQuestion.GetCorrectAnswerIndex());
-            buttonImage = answerButtons[currentQuestion.GetCorrectAnswerIndex()].GetComponent<Image>();
+            // Dakle 0 je uvek tačan odgovor
+            questionText.text = "Tačan odgovor je\n" + currentQuestion.answers[0];
+            // Dugme sa indeksom 0 biće tačan odgovor
+            buttonImage = answerButtons[0].GetComponent<Image>();
             buttonImage.sprite = correctAnswerSprite;
         }
     }
@@ -195,12 +192,12 @@ public class Quiz : MonoBehaviour
 
     private void DisplayQuestion()
     {
-        questionText.text = currentQuestion.GetQuestion();
+        questionText.text = currentQuestion.question;
 
         for (int i = 0; i < answerButtons.Length; i++)
         {
             TextMeshProUGUI buttonText = answerButtons[i].GetComponentInChildren<TextMeshProUGUI>();
-            buttonText.text = currentQuestion.GetAnswer(i);
+            buttonText.text = currentQuestion.answers[i];
         }
     }
 
