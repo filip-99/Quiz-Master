@@ -4,7 +4,9 @@ using IneryLibrary.Core.Api.v1;
 using IneryLibrary.Core.Providers;
 using Json.Lib;
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 using TMPro;
@@ -25,10 +27,12 @@ public class Quiz : MonoBehaviour
         }
     }
 
-    [Header("Questions")]
-    [SerializeField] TextMeshProUGUI questionText;
     // Potrebna je lista koja će sadržati pitanja
     List<Question> questions = new List<Question>();
+    string serializedData;
+
+    [Header("Questions")]
+    [SerializeField] TextMeshProUGUI questionText;
     // Promenjiva će sadržati određeno pitanje iz liste
     Question currentQuestion;
 
@@ -36,6 +40,8 @@ public class Quiz : MonoBehaviour
     [SerializeField] GameObject[] answerButtons;
     int correctAnswerIndex;
     bool hasAnsweredEarly;
+    // Pošto je prvi odgovor u listi uvek tačan, potrebna je promenjiva koja će da ga sačuva
+    int correctAnsware;
 
     [Header("Buttons")]
     [SerializeField] Sprite defaultAnswerSprite;
@@ -79,11 +85,44 @@ public class Quiz : MonoBehaviour
                 encode_type = "string",
                 limit = 1
             });
+            int i = 0;
 
             foreach (var row in result.rows)
             {
                 questions.Add(JsonConvert.DeserializeObject<Question>(row.ToString()));
+                questions[i].correctAnswer = questions[i].answers[0];
+                i++;
             }
+
+            i = 0;
+            // Mešanje pitanja u listi
+            for (i = questions.Count - 1; i >= 0; i--)
+            {
+                int rnd = UnityEngine.Random.Range(0, i);
+
+                // Swap the elements at indices i and rnd.
+                Question temp = questions[i];
+                questions[i] = questions[rnd];
+                questions[rnd] = temp;
+            }
+
+            i = 0;
+            // Mešanje pitanja u listi
+            for (i = questions.Count - 1; i >= 0; i--)
+            {
+                for (int j = questions[i].answers.Count - 1; j > 0; j--)
+                {
+                    int rndAns = Random.Range(0, j);
+                    // Debug.Log(rndAns);
+
+                    // Swap the elements at indices i and rnd.
+                    string temp = questions[i].answers[j];
+                    questions[i].answers[j] = questions[i].answers[rndAns];
+                    questions[i].answers[rndAns] = temp;
+                }
+
+            }
+
 
             return questions;
         }
@@ -93,7 +132,6 @@ public class Quiz : MonoBehaviour
             return null;
         }
     }
-
     // ---------------------------------------------------------------------------
 
     private async void Awake()
@@ -101,13 +139,16 @@ public class Quiz : MonoBehaviour
         instance = this;
         questions.Clear();
         questions = await GetQuestionsAsync();
-        Debug.Log(questions.Count);
+        // Debug.Log(questions.Count);
     }
 
     private async void Start()
     {
         progressBar.maxValue = questions.Count;
         progressBar.value = 0;
+
+        string serializedData = JsonConvert.SerializeObject(questions);
+        PlayerPrefs.SetString("questionsList", serializedData);
     }
 
     void Update()
@@ -133,6 +174,7 @@ public class Quiz : MonoBehaviour
 
     public void OnAnswerSelected(int index)
     {
+        Debug.Log(questions.Count);
         hasAnsweredEarly = true;
         DisplayAnswer(index);
         SetButtonState(false);
@@ -143,9 +185,29 @@ public class Quiz : MonoBehaviour
 
     void DisplayAnswer(int index)
     {
+        string serializedData = PlayerPrefs.GetString("questionsList");
+        List<Question> questions = JsonConvert.DeserializeObject<List<Question>>(serializedData);
+
+        Debug.Log(questions.Count);
+
         Image buttonImage;
         // 0 - Svako pitanje sa indeksom 0 je tačan odgovor
-        if (index == 0)
+        for (int i = 0; i < questions.Count; i++)
+        {
+            Debug.Log("Prvi for");
+
+            for (int j = 0; j < questions[i].answers[j].Count(); j++)
+            {
+                Debug.Log("Drugi for");
+                if (questions[i].correctAnswer.Equals(questions[i].answers[j]))
+                {
+                    correctAnsware = j;
+                    Debug.Log("Korektan odgovor je: " + j);
+                }
+            }
+        }
+
+        if (index == correctAnsware)
         {
             questionText.text = "Tačno!";
             buttonImage = answerButtons[index].GetComponent<Image>();
@@ -156,7 +218,7 @@ public class Quiz : MonoBehaviour
         else
         {
             // Dakle 0 je uvek tačan odgovor
-            questionText.text = "Tačan odgovor je\n" + currentQuestion.answers[0];
+            questionText.text = "Tačan odgovor je\n" + currentQuestion.answers[correctAnsware];
             // Dugme sa indeksom 0 biće tačan odgovor
             buttonImage = answerButtons[0].GetComponent<Image>();
             buttonImage.sprite = correctAnswerSprite;
