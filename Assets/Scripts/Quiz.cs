@@ -1,18 +1,16 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using TMPro;
-using UnityEngine.UI;
+﻿using IneryLibrary;
+using IneryLibrary.Core;
 using IneryLibrary.Core.Api.v1;
 using IneryLibrary.Core.Providers;
-using IneryLibrary.Core;
-using IneryLibrary;
-using System;
-using Random = UnityEngine.Random;
 using Json.Lib;
-using Unity.VisualScripting;
+using System;
+using System.Collections.Generic;
+using System.Reflection;
 using System.Threading.Tasks;
-using System.Linq;
+using TMPro;
+using UnityEngine;
+using UnityEngine.UI;
+using Random = UnityEngine.Random;
 
 public class Quiz : MonoBehaviour
 {
@@ -56,43 +54,6 @@ public class Quiz : MonoBehaviour
 
     public bool isComplete;
 
-    private void Awake()
-    {
-        instance = this;
-    }
-
-    private async void Start()
-    {
-        questions = await GetQuestionsAsync();
-        Debug.Log(questions.Count);
-
-
-        progressBar.maxValue = questions.Count;
-        progressBar.value = 0;
-    }
-
-    void Update()
-    {
-        timerImage.fillAmount = Timer.Instance.fillFraction;
-        if (Timer.Instance.loadNextQuestion)
-        {
-            if (progressBar.value == progressBar.maxValue)
-            {
-                isComplete = true;
-                return;
-            }
-
-            hasAnsweredEarly = false;
-            GetNextQuestion();
-            Timer.Instance.loadNextQuestion = false;
-        }
-        else if (!hasAnsweredEarly && !Timer.Instance.isAnsweringQuestion)
-        {
-            DisplayAnswer(-1);
-            SetButtonState(false);
-        }
-    }
-
     // ---------------------------------------------------------------------------
 
     public async Task<List<Question>> GetQuestionsAsync()
@@ -134,6 +95,41 @@ public class Quiz : MonoBehaviour
     }
 
     // ---------------------------------------------------------------------------
+
+    private async void Awake()
+    {
+        instance = this;
+        questions.Clear();
+        questions = await GetQuestionsAsync();
+        Debug.Log(questions.Count);
+    }
+
+    private async void Start()
+    {
+        progressBar.maxValue = questions.Count;
+        progressBar.value = 0;
+    }
+
+    void Update()
+    {
+        timerImage.fillAmount = Timer.Instance.fillFraction;
+        if (Timer.Instance.loadNextQuestion)
+        {
+            if (progressBar.value == progressBar.maxValue)
+            {
+                isComplete = true;
+                return;
+            }
+            hasAnsweredEarly = false;
+            GetNextQuestion();
+            Timer.Instance.loadNextQuestion = false;
+        }
+        else if (!hasAnsweredEarly && !Timer.Instance.isAnsweringQuestion)
+        {
+            DisplayAnswer(-1);
+            SetButtonState(false);
+        }
+    }
 
     public void OnAnswerSelected(int index)
     {
@@ -192,7 +188,7 @@ public class Quiz : MonoBehaviour
 
     private void DisplayQuestion()
     {
-        questionText.text = currentQuestion.question;
+        questionText.text = currentQuestion.question.ToString();
 
         for (int i = 0; i < answerButtons.Length; i++)
         {

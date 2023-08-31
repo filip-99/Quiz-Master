@@ -108,6 +108,7 @@ public class LoginScreen : MonoBehaviour
                 return;
             }
 
+            //Quiz.Instance.
             Quiz.Instance.gameObject.SetActive(true);
             Quiz.Instance.SetUsername(usernameInput.text);
             gameObject.SetActive(false);
