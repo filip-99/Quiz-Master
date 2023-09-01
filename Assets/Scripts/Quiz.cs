@@ -29,7 +29,6 @@ public class Quiz : MonoBehaviour
 
     // Potrebna je lista koja će sadržati pitanja
     List<Question> questions = new List<Question>();
-    string serializedData;
 
     [Header("Questions")]
     [SerializeField] TextMeshProUGUI questionText;
@@ -60,95 +59,19 @@ public class Quiz : MonoBehaviour
 
     public bool isComplete;
 
-    // ---------------------------------------------------------------------------
-
-    public async Task<List<Question>> GetQuestionsAsync()
-    {
-        Inery inery = new Inery(new IneryConfigurator()
-        {
-            HttpEndpoint = "https://tas.blockchain-servers.world", //Mainnet
-            ChainId = "3b891f1a78a7c27cf5dbaa82d2f30f96d0452262a354b4995b88c162ab066eee",
-            ExpireSeconds = 60,
-            SignProvider = new DefaultSignProvider("5KftZF2nz6eiYy9ZBtGymj75XJWiKJk2f859qdc6kGGMb6boAkb")
-        });
-
-        try
-        {
-            var result = await inery.GetTableRows(new GetTableRowsRequest()
-            {
-                json = true,
-                code = "quiz",
-                scope = "quiz",
-                table = "questions",
-                index_position = "0",
-                key_type = "i64",
-                encode_type = "string",
-                limit = 1
-            });
-            int i = 0;
-
-            foreach (var row in result.rows)
-            {
-                questions.Add(JsonConvert.DeserializeObject<Question>(row.ToString()));
-                questions[i].correctAnswer = questions[i].answers[0];
-                i++;
-            }
-
-            i = 0;
-            // Mešanje pitanja u listi
-            for (i = questions.Count - 1; i >= 0; i--)
-            {
-                int rnd = UnityEngine.Random.Range(0, i);
-
-                // Swap the elements at indices i and rnd.
-                Question temp = questions[i];
-                questions[i] = questions[rnd];
-                questions[rnd] = temp;
-            }
-
-            i = 0;
-            // Mešanje pitanja u listi
-            for (i = questions.Count - 1; i >= 0; i--)
-            {
-                for (int j = questions[i].answers.Count - 1; j > 0; j--)
-                {
-                    int rndAns = Random.Range(0, j);
-                    // Debug.Log(rndAns);
-
-                    // Swap the elements at indices i and rnd.
-                    string temp = questions[i].answers[j];
-                    questions[i].answers[j] = questions[i].answers[rndAns];
-                    questions[i].answers[rndAns] = temp;
-                }
-
-            }
-
-
-            return questions;
-        }
-        catch (Exception e)
-        {
-            Debug.Log(e);
-            return null;
-        }
-    }
-    // ---------------------------------------------------------------------------
 
     private async void Awake()
     {
         instance = this;
-        questions.Clear();
-        questions = await GetQuestionsAsync();
-        // Debug.Log(questions.Count);
     }
 
     private async void Start()
     {
+        questions.Clear();
+        questions = BlockchainData.Instance.LoadList();
+
         progressBar.maxValue = questions.Count;
         progressBar.value = 0;
-
-        string serializedData = JsonConvert.SerializeObject(questions);
-        PlayerPrefs.SetString("questionsList", serializedData);
     }
 
     void Update()
@@ -174,7 +97,7 @@ public class Quiz : MonoBehaviour
 
     public void OnAnswerSelected(int index)
     {
-        Debug.Log(questions.Count);
+        // Debug.Log(BlockchainData.Instance.GetData());
         hasAnsweredEarly = true;
         DisplayAnswer(index);
         SetButtonState(false);
@@ -185,21 +108,14 @@ public class Quiz : MonoBehaviour
 
     void DisplayAnswer(int index)
     {
-        string serializedData = PlayerPrefs.GetString("questionsList");
-        List<Question> questions = JsonConvert.DeserializeObject<List<Question>>(serializedData);
-
-        Debug.Log(questions.Count);
-
         Image buttonImage;
         // 0 - Svako pitanje sa indeksom 0 je tačan odgovor
-        for (int i = 0; i < questions.Count; i++)
+        for (int i = 0; i < BlockchainData.Instance.LoadList().Count; i++)
         {
-            Debug.Log("Prvi for");
 
-            for (int j = 0; j < questions[i].answers[j].Count(); j++)
+            for (int j = 0; j < BlockchainData.Instance.LoadList()[i].answers.Count; j++)
             {
-                Debug.Log("Drugi for");
-                if (questions[i].correctAnswer.Equals(questions[i].answers[j]))
+                if (BlockchainData.Instance.LoadList()[i].correctAnswer.Equals(BlockchainData.Instance.LoadList()[i].answers[j]))
                 {
                     correctAnsware = j;
                     Debug.Log("Korektan odgovor je: " + j);
@@ -220,7 +136,7 @@ public class Quiz : MonoBehaviour
             // Dakle 0 je uvek tačan odgovor
             questionText.text = "Tačan odgovor je\n" + currentQuestion.answers[correctAnsware];
             // Dugme sa indeksom 0 biće tačan odgovor
-            buttonImage = answerButtons[0].GetComponent<Image>();
+            buttonImage = answerButtons[correctAnsware].GetComponent<Image>();
             buttonImage.sprite = correctAnswerSprite;
         }
     }
