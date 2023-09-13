@@ -8,5 +8,6 @@ public class Question
     public string question { get; set; }
     public int question_id { get; set; }
     public string correctAnswer { get; set; }
+    public int correctAnswerIndex { get; set; }
 
 }

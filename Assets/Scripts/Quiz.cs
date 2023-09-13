@@ -39,8 +39,6 @@ public class Quiz : MonoBehaviour
     [SerializeField] GameObject[] answerButtons;
     int correctAnswerIndex;
     bool hasAnsweredEarly;
-    // Pošto je prvi odgovor u listi uvek tačan, potrebna je promenjiva koja će da ga sačuva
-    int correctAnsware;
 
     [Header("Buttons")]
     [SerializeField] Sprite defaultAnswerSprite;
@@ -68,7 +66,7 @@ public class Quiz : MonoBehaviour
     private async void Start()
     {
         questions.Clear();
-        questions = BlockchainData.Instance.LoadList();
+        questions = BlockchainData.Instance.GetQuestions();
 
         progressBar.maxValue = questions.Count;
         progressBar.value = 0;
@@ -97,7 +95,6 @@ public class Quiz : MonoBehaviour
 
     public void OnAnswerSelected(int index)
     {
-        // Debug.Log(BlockchainData.Instance.GetData());
         hasAnsweredEarly = true;
         DisplayAnswer(index);
         SetButtonState(false);
@@ -109,21 +106,7 @@ public class Quiz : MonoBehaviour
     void DisplayAnswer(int index)
     {
         Image buttonImage;
-        // 0 - Svako pitanje sa indeksom 0 je tačan odgovor
-        for (int i = 0; i < BlockchainData.Instance.LoadList().Count; i++)
-        {
-
-            for (int j = 0; j < BlockchainData.Instance.LoadList()[i].answers.Count; j++)
-            {
-                if (BlockchainData.Instance.LoadList()[i].correctAnswer.Equals(BlockchainData.Instance.LoadList()[i].answers[j]))
-                {
-                    correctAnsware = j;
-                    Debug.Log("Korektan odgovor je: " + j);
-                }
-            }
-        }
-
-        if (index == correctAnsware)
+        if (index == currentQuestion.correctAnswerIndex)
         {
             questionText.text = "Tačno!";
             buttonImage = answerButtons[index].GetComponent<Image>();
@@ -134,9 +117,9 @@ public class Quiz : MonoBehaviour
         else
         {
             // Dakle 0 je uvek tačan odgovor
-            questionText.text = "Tačan odgovor je\n" + currentQuestion.answers[correctAnsware];
+            questionText.text = "Tačan odgovor je\n" + currentQuestion.answers[currentQuestion.correctAnswerIndex];
             // Dugme sa indeksom 0 biće tačan odgovor
-            buttonImage = answerButtons[correctAnsware].GetComponent<Image>();
+            buttonImage = answerButtons[currentQuestion.correctAnswerIndex].GetComponent<Image>();
             buttonImage.sprite = correctAnswerSprite;
         }
     }
@@ -166,7 +149,7 @@ public class Quiz : MonoBehaviour
 
     private void DisplayQuestion()
     {
-        questionText.text = currentQuestion.question.ToString();
+        questionText.text = currentQuestion.question;
 
         for (int i = 0; i < answerButtons.Length; i++)
         {

@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
 using Json.Lib;
+using System.Linq;
 
 public class BlockchainData : MonoBehaviour
 {
@@ -58,46 +59,18 @@ public class BlockchainData : MonoBehaviour
                 table = "questions",
                 index_position = "0",
                 key_type = "i64",
-                encode_type = "string",
-                limit = 1
+                encode_type = "string"
+                // limit = 1
             });
-            int i = 0;
+            int index = 0;
 
             foreach (var row in result.rows)
             {
                 questions.Add(JsonConvert.DeserializeObject<Question>(row.ToString()));
-                questions[i].correctAnswer = questions[i].answers[0];
-                i++;
+                questions[index].correctAnswer = questions[index].answers[0];
+                index++;
             }
 
-            i = 0;
-            // Mešanje pitanja u listi
-            for (i = questions.Count - 1; i >= 0; i--)
-            {
-                int rnd = UnityEngine.Random.Range(0, i);
-
-                // Swap the elements at indices i and rnd.
-                Question temp = questions[i];
-                questions[i] = questions[rnd];
-                questions[rnd] = temp;
-            }
-
-            i = 0;
-            // Mešanje odgovora u listi
-            for (i = questions.Count - 1; i >= 0; i--)
-            {
-                for (int j = questions[i].answers.Count - 1; j > 0; j--)
-                {
-                    int rndAns = UnityEngine.Random.Range(0, j);
-                    // Debug.Log(rndAns);
-
-                    // Swap the elements at indices i and rnd.
-                    string temp = questions[i].answers[j];
-                    questions[i].answers[j] = questions[i].answers[rndAns];
-                    questions[i].answers[rndAns] = temp;
-                }
-
-            }
             SaveQuestions(questions);
             return questions;
         }
@@ -126,4 +99,97 @@ public class BlockchainData : MonoBehaviour
 
         return questions;
     }
+
+    public List<Question> LimitQuestion(List<Question> questions, int limit)
+    {
+        if (questions == null)
+        {
+            // Ako je lista questions null, vratite praznu listu.
+            return new List<Question>();
+            Debug.Log("Lista je prazna");
+        }
+
+        int count = Math.Min(questions.Count, limit);
+
+        List<Question> limitedQuestions = new List<Question>(count);
+
+        for (int i = 0; i < count; i++)
+        {
+            limitedQuestions.Add(questions[i]);
+        }
+
+
+
+        return limitedQuestions;
+    }
+
+    public List<Question> LimitAnswers(List<Question> questions)
+    {
+        int answerCount;
+        for (int i = 0; i < questions.Count; i++)
+        {
+            // Dobij broj elemenata u podlisti answers.
+            answerCount = questions[i].answers.Count;
+
+            // Ako je broj elemenata veæi od 4, ukloni višak elemenata.
+            if (answerCount > 4)
+            {
+                questions[i].answers.RemoveRange(4, answerCount - 4);
+            }
+        }
+        return questions;
+    }
+
+    private List<Question> MixingAnswersAndQuestions(List<Question> questions)
+    {
+        // Mešanje pitanja
+        for (int i = questions.Count - 1; i >= 0; i--)
+        {
+            int rndQuestion = UnityEngine.Random.Range(0, i + 1);
+
+            // Swap the questions at indices i and rndQuestion.
+            Question tempQuestion = questions[i];
+            questions[i] = questions[rndQuestion];
+            questions[rndQuestion] = tempQuestion;
+
+            // Mešanje odgovora u trenutnom pitanju
+            for (int j = questions[i].answers.Count - 1; j >= 0; j--)
+            {
+                int rndAns = UnityEngine.Random.Range(0, j + 1);
+
+                // Swap the answers at indices j and rndAns.
+                string tempAnswer = questions[i].answers[j];
+                questions[i].answers[j] = questions[i].answers[rndAns];
+                questions[i].answers[rndAns] = tempAnswer;
+            }
+        }
+
+        for (int i = 0; i < questions.Count; i++)
+        {
+            for (int j = 0; j < questions[i].answers.Count; j++)
+            {
+                if (questions[i].correctAnswer == questions[i].answers[j])
+                {
+                    questions[i].correctAnswerIndex = j;
+                }
+            }
+        }
+
+        return questions;
+    }
+
+    public List<Question> GetQuestions()
+    {
+        List<Question> originalQuestions = LoadList();
+
+        List<Question> limitedQuestions = LimitQuestion(originalQuestions, 10);
+
+        List<Question> limitedAnsware = LimitAnswers(limitedQuestions);
+
+        List<Question> mixedQuestions = MixingAnswersAndQuestions(limitedAnsware);
+
+        return mixedQuestions;
+    }
+
+
 }
