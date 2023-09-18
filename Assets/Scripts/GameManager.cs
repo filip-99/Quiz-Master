@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -20,18 +21,23 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public bool isExecuted;
+
     void Awake()
     {
         instance = this;
     }
 
-    // Potrebna je promenjiva koja će uzimati vrednost najboljeg skora iz prefabs
-    int highScore;
+    private void Start()
+    {
+        isExecuted = true;
+    }
 
     void Update()
     {
-        if (Quiz.Instance.isComplete)
+        if (Quiz.Instance.isComplete && isExecuted)
         {
+            isExecuted = false;
             Quiz.Instance.gameObject.SetActive(false);
             EndScreen.Instance.gameObject.SetActive(true);
             EndScreen.Instance.ShowFinalScore();

@@ -11,6 +11,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
@@ -29,6 +30,9 @@ public class Quiz : MonoBehaviour
 
     // Potrebna je lista koja će sadržati pitanja
     List<Question> questions = new List<Question>();
+    UserData userData = new UserData();
+
+    [SerializeField] TextMeshProUGUI usernameText;
 
     [Header("Questions")]
     [SerializeField] TextMeshProUGUI questionText;
@@ -49,7 +53,6 @@ public class Quiz : MonoBehaviour
 
     [Header("Scoring Data")]
     [SerializeField] TextMeshProUGUI scoreText;
-    [SerializeField] TextMeshProUGUI usernameText;
 
 
     [Header("ProgressBar")]
@@ -63,13 +66,15 @@ public class Quiz : MonoBehaviour
         instance = this;
     }
 
-    private async void Start()
+    private async Task Start()
     {
         questions.Clear();
         questions = BlockchainData.Instance.GetQuestions();
-
+        userData = MediatorScript.Instance.LoadUserData();
+        Debug.Log(userData.username);
         progressBar.maxValue = questions.Count;
         progressBar.value = 0;
+        SetUsername();
     }
 
     void Update()
@@ -108,7 +113,7 @@ public class Quiz : MonoBehaviour
         Image buttonImage;
         if (index == currentQuestion.correctAnswerIndex)
         {
-            questionText.text = "Tačno!";
+            questionText.text = "Exactly!";
             buttonImage = answerButtons[index].GetComponent<Image>();
             buttonImage.sprite = correctAnswerSprite;
             // Kada tačno odgovorimo na pitanje povećaćemo vrednost tačnih odgovora
@@ -117,7 +122,7 @@ public class Quiz : MonoBehaviour
         else
         {
             // Dakle 0 je uvek tačan odgovor
-            questionText.text = "Tačan odgovor je\n" + currentQuestion.answers[currentQuestion.correctAnswerIndex];
+            questionText.text = "Correct answer is\n" + currentQuestion.answers[currentQuestion.correctAnswerIndex];
             // Dugme sa indeksom 0 biće tačan odgovor
             buttonImage = answerButtons[currentQuestion.correctAnswerIndex].GetComponent<Image>();
             buttonImage.sprite = correctAnswerSprite;
@@ -174,10 +179,9 @@ public class Quiz : MonoBehaviour
         }
     }
 
-    // Metoda za setovanje usernamea
-    public void SetUsername(string username)
+    public void SetUsername()
     {
-        usernameText.text = username;
+        usernameText.text = MediatorScript.Instance.data.username.ToString();
     }
 
 }

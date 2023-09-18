@@ -23,20 +23,17 @@ public class StartScreen : MonoBehaviour
     public void Login()
     {
         gameObject.SetActive(false);
-        Quiz.Instance.gameObject.SetActive(false);
         RegistrationScreen.Instance.gameObject.SetActive(false);
         LoginScreen.Instance.gameObject.SetActive(true);
 
-        UIManager.Instance.ShowKeyboard(LoginScreen.Instance.transform);
+        UIManagerScene2.Instance.ShowKeyboard(LoginScreen.Instance.gameObject.transform);
     }
 
     public void Registration()
     {
         gameObject.SetActive(false);
-        Quiz.Instance.gameObject.SetActive(false);
         LoginScreen.Instance.gameObject.SetActive(false);
         RegistrationScreen.Instance.gameObject.SetActive(true);
-
-        UIManager.Instance.ShowKeyboard(RegistrationScreen.Instance.transform);
+        UIManagerScene2.Instance.ShowKeyboard(RegistrationScreen.Instance.gameObject.transform);
     }
 }

@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class UserInput : MonoBehaviour
 {
-
+    // Registration
     string wordUsername = null;
     string wordEmail = null;
     string wordPassword = null;
@@ -15,6 +15,12 @@ public class UserInput : MonoBehaviour
     int wordConfirmPasswordIndex = 0;
     string alpha;
     int focusElement;
+
+    // Login
+    string wordUsernameLogin = null;
+    string wordPasswordLogin = null;
+    int wordUsernameIndexLogin = 0;
+    int wordPasswordIndexLogin = 0;
 
     void Update()
     {
@@ -33,6 +39,15 @@ public class UserInput : MonoBehaviour
         else if (RegistrationScreen.Instance.confirmPasswordInput.isFocused)
         {
             focusElement = 4;
+        }
+        // ------------------------------------------------------------------------
+        else if (LoginScreen.Instance.usernameInput.isFocused)
+        {
+            focusElement = 5;
+        }
+        else if (LoginScreen.Instance.passwordInput.isFocused)
+        {
+            focusElement = 6;
         }
     }
 
@@ -71,6 +86,18 @@ public class UserInput : MonoBehaviour
                         wordConfirmPassword = wordConfirmPassword.Remove(wordConfirmPassword.Length - 1, 1);
                     RegistrationScreen.Instance.confirmPasswordInput.text = wordConfirmPassword.ToString();
                     break;
+                case 5:
+                    wordUsernameIndexLogin--;
+                    if (wordUsernameLogin.Length > 0)
+                        wordUsernameLogin = wordUsernameLogin.Remove(wordUsernameLogin.Length - 1, 1);
+                    LoginScreen.Instance.usernameInput.text = wordUsernameLogin.ToString();
+                    break;
+                case 6:
+                    wordPasswordIndexLogin--;
+                    if (wordPasswordLogin.Length > 0)
+                        wordPasswordLogin = wordPasswordLogin.Remove(wordPasswordLogin.Length - 1, 1);
+                    LoginScreen.Instance.passwordInput.text = wordPasswordLogin.ToString();
+                    break;
                 default:
                     Debug.Log("Invalid InputText selected.");
                     break;
@@ -101,6 +128,16 @@ public class UserInput : MonoBehaviour
                     wordConfirmPasswordIndex++;
                     wordConfirmPassword = wordConfirmPassword + alphabet;
                     RegistrationScreen.Instance.confirmPasswordInput.text = wordConfirmPassword;
+                    break;
+                case 5:
+                    wordUsernameIndexLogin++;
+                    wordUsernameLogin = wordUsernameLogin + alphabet;
+                    LoginScreen.Instance.usernameInput.text = wordUsernameLogin;
+                    break;
+                case 6:
+                    wordPasswordIndexLogin++;
+                    wordPasswordLogin = wordPasswordLogin + alphabet;
+                    LoginScreen.Instance.passwordInput.text = wordPasswordLogin;
                     break;
                 default:
                     Debug.Log("Invalid inputText selected.");

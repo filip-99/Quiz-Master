@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using Json.Lib;
 using System.Linq;
+using System.Runtime.CompilerServices;
 
 public class BlockchainData : MonoBehaviour
 {
@@ -24,6 +25,7 @@ public class BlockchainData : MonoBehaviour
     }
 
     public List<Question> questions = new List<Question>();
+    public List<Question> loadList = new List<Question>();
 
 
     public void SaveQuestions(List<Question> questions)
@@ -63,7 +65,7 @@ public class BlockchainData : MonoBehaviour
                 // limit = 1
             });
             int index = 0;
-
+            questions.Clear();
             foreach (var row in result.rows)
             {
                 questions.Add(JsonConvert.DeserializeObject<Question>(row.ToString()));
@@ -87,6 +89,14 @@ public class BlockchainData : MonoBehaviour
 
         questions.Clear();
         questions = await GetQuestionsAsync();
+    }
+
+    private async void Start()
+    {
+        loadList.Clear();
+        loadList = await GetQuestionsAsync();
+        Debug.Log(loadList.Count);
+
     }
 
     public List<Question> LoadList()
@@ -181,12 +191,14 @@ public class BlockchainData : MonoBehaviour
     public List<Question> GetQuestions()
     {
         List<Question> originalQuestions = LoadList();
+        Debug.Log(loadList.Count);
+
 
         List<Question> limitedQuestions = LimitQuestion(originalQuestions, 10);
 
-        List<Question> limitedAnsware = LimitAnswers(limitedQuestions);
+        List<Question> limitedAnswers = LimitAnswers(limitedQuestions);
 
-        List<Question> mixedQuestions = MixingAnswersAndQuestions(limitedAnsware);
+        List<Question> mixedQuestions = MixingAnswersAndQuestions(limitedAnswers);
 
         return mixedQuestions;
     }

@@ -3,7 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using TMPro;
-using UnityEditor.VersionControl;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -17,7 +16,6 @@ using UnityEngine.SceneManagement;
 using Action = IneryLibrary.Core.Api.v1.Action;
 using static UnityEngine.RuleTile.TilingRuleOutput;
 using Unity.VisualScripting;
-using UnityEditor.PackageManager;
 
 public class RegistrationScreen : MonoBehaviour
 {
@@ -106,12 +104,16 @@ public class RegistrationScreen : MonoBehaviour
                     }
                 });
                 Debug.Log("Uspešno ste se registrovali"); // poruka
+                LoginScreen.Instance.gameObject.SetActive(true);
+                UIManagerScene2.Instance.message.text = "Succesfully registered, you can register";
+                UIManagerScene2.Instance.ShowPanel(LoginScreen.Instance.gameObject.gameObject.transform);
+                gameObject.SetActive(false);
             }
 
             catch (Exception e)
             {
-                UIManager.Instance.message.text = "Username already exists";
-                UIManager.Instance.ShowPanel(gameObject.transform);
+                UIManagerScene2.Instance.message.text = "Username already exists";
+                UIManagerScene2.Instance.ShowPanel(gameObject.transform);
                 Debug.Log(e);
             }
         }
@@ -120,7 +122,7 @@ public class RegistrationScreen : MonoBehaviour
     private bool UsernameCheck()
     {
         Regex usernameRegex = new Regex("^[a-z1-5.]{1,12}$");
-        UIManager.Instance.message.text = "";
+        UIManagerScene2.Instance.message.text = "";
 
         if (usernameRegex.IsMatch(usernameInput.text))
         {
@@ -129,8 +131,8 @@ public class RegistrationScreen : MonoBehaviour
         }
         else
         {
-            UIManager.Instance.message.text = "Username can only have letters, numbers 1-5, dot, 1-12 chars.";
-            UIManager.Instance.ShowPanel(gameObject.transform);
+            UIManagerScene2.Instance.message.text = "Username can only have letters, numbers 1-5, dot, 1-12 chars.";
+            UIManagerScene2.Instance.ShowPanel(gameObject.transform);
             return false;
         }
     }
@@ -138,7 +140,7 @@ public class RegistrationScreen : MonoBehaviour
     public bool EmailCheck()
     {
         Regex emailRegex = new Regex(@"^([\w\.\-]+)@([\w\-]+)((\.(\w){2,3})+)$", RegexOptions.IgnoreCase);
-        UIManager.Instance.message.text = "";
+        UIManagerScene2.Instance.message.text = "";
         if (emailRegex.IsMatch(emailInput.text))
         {
             Debug.Log("Validan meil");
@@ -146,8 +148,8 @@ public class RegistrationScreen : MonoBehaviour
         }
         else
         {
-            UIManager.Instance.message.text = "The email is not valid!";
-            UIManager.Instance.ShowPanel(gameObject.transform);
+            UIManagerScene2.Instance.message.text = "The email is not valid!";
+            UIManagerScene2.Instance.ShowPanel(gameObject.transform);
             return false;
         }
     }
@@ -155,7 +157,7 @@ public class RegistrationScreen : MonoBehaviour
     public bool PasswordCheck()
     {
         Regex passwordRegex = new Regex(@"^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$");
-        UIManager.Instance.message.text = "";
+        UIManagerScene2.Instance.message.text = "";
         if (passwordRegex.IsMatch(passwordInput.text))
         {
             Debug.Log("Validan pasword");
@@ -164,8 +166,8 @@ public class RegistrationScreen : MonoBehaviour
         else
         {
             // UIManager.Instance.message.text = "The password must be at least 6 characters long and consist of uppercase and lowercase letters, symbols, and numbers";
-            UIManager.Instance.message.text = "Password must have a letter, a number, and be at least 8 characters long";
-            UIManager.Instance.ShowPanel(gameObject.transform);
+            UIManagerScene2.Instance.message.text = "Password must have a letter, a number, and be at least 8 characters long";
+            UIManagerScene2.Instance.ShowPanel(gameObject.transform);
             return false;
         }
     }
@@ -179,8 +181,8 @@ public class RegistrationScreen : MonoBehaviour
         }
         else
         {
-            UIManager.Instance.message.text = "The passwords do not match";
-            UIManager.Instance.ShowPanel(gameObject.transform);
+            UIManagerScene2.Instance.message.text = "The passwords do not match";
+            UIManagerScene2.Instance.ShowPanel(gameObject.transform);
             return false;
         }
     }
