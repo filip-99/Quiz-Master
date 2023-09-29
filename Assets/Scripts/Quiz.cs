@@ -8,7 +8,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -33,6 +32,8 @@ public class Quiz : MonoBehaviour
     UserData userData = new UserData();
 
     [SerializeField] TextMeshProUGUI usernameText;
+
+    public UserSO scriptableObject;
 
     [Header("Questions")]
     [SerializeField] TextMeshProUGUI questionText;
@@ -66,11 +67,11 @@ public class Quiz : MonoBehaviour
         instance = this;
     }
 
-    private async Task Start()
+    private void Start()
     {
         questions.Clear();
         questions = BlockchainData.Instance.GetQuestions();
-        userData = MediatorScript.Instance.LoadUserData();
+        userData = MediatorScript.Instance.jsonObj;
         Debug.Log(userData.username);
         progressBar.maxValue = questions.Count;
         progressBar.value = 0;
@@ -181,7 +182,7 @@ public class Quiz : MonoBehaviour
 
     public void SetUsername()
     {
-        usernameText.text = MediatorScript.Instance.data.username.ToString();
+        usernameText.text = MediatorScript.Instance.jsonObj.username.ToString();
     }
 
 }

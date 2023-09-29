@@ -6,7 +6,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using System.Threading.Tasks;
 using System;
 using Json.Lib;
 using System.Security.Cryptography;
@@ -18,17 +17,21 @@ public class MediatorScript : Singleton<MediatorScript>
     [SerializeField] string startScene;
     public UserData data;
 
+    public UserSO scriptableObject;
+
+    public UserData jsonObj;
+
     protected override void Awake()
     {
         base.Awake();
     }
 
-    public async Task<UserData> GetRow(string usernameInput)
+    public async void GetRow(string usernameInput)
     {
         Inery inery = new Inery(new IneryConfigurator()
         {
             HttpEndpoint = "https://tas.blockchain-servers.world", //Mainnet
-            ChainId = "6aae7eb3a1d8993e6d9865d1eb62f7dff34e2cd9cd7d405d4d5ba96a71d48c9c",
+            ChainId = "3b891f1a78a7c27cf5dbaa82d2f30f96d0452262a354b4995b88c162ab066eee",
             ExpireSeconds = 60,
             SignProvider = new DefaultSignProvider("5KftZF2nz6eiYy9ZBtGymj75XJWiKJk2f859qdc6kGGMb6boAkb")
         });
@@ -57,18 +60,21 @@ public class MediatorScript : Singleton<MediatorScript>
                 UIManagerScene2.Instance.ShowPanel(gameObject.transform);
                 Debug.Log("Pogrešan username");
 
-                return null;
+                //return null;
             }
 
-            UserData jsonObj = JsonConvert.DeserializeObject<UserData>(result.rows[0].ToString());
-            return jsonObj;
+            jsonObj = JsonConvert.DeserializeObject<UserData>(result.rows[0].ToString());
+            Debug.Log(jsonObj.username);
+            //scriptableObject.SaveUserData(jsonObj);
+
+            //return jsonObj;
         }
         catch (Exception e)
         {
             UIManagerScene2.Instance.message.text = "Error";
             UIManagerScene2.Instance.ShowPanel(gameObject.transform);
             Debug.Log(e);
-            return null;
+            //return null;
         }
     }
 
@@ -122,8 +128,8 @@ public class MediatorScript : Singleton<MediatorScript>
                             {
                                 new PermissionLevel() {actor = "quiz", permission = "active" }
                             },
-                            name = "insertu",
-                            data = new { username = userData.username, scorre = highScore}
+                            name = "inserts",
+                            data = new { username = userData.username, score = highScore}
                         }
                     }
                 });

@@ -33,10 +33,11 @@ public class EndScreen : MonoBehaviour
 
     public void ShowFinalScore()
     {
-        finalScoreText.text = "Čestitamo!\nVaš skor je: " + ScoreKeeper.Instance.CalculateScore() + "%";
+        finalScoreText.text = "Congratulations!\nYour score is: " + ScoreKeeper.Instance.CalculateScore() + "%";
         if (ScoreKeeper.Instance.CalculateScore() > 0)
         {
-            MediatorScript.Instance.SaveScore(MediatorScript.Instance.data, ScoreKeeper.Instance.CalculateScore());
+            Debug.Log(ScoreKeeper.Instance.CalculateScore());
+            MediatorScript.Instance.SaveScore(MediatorScript.Instance.jsonObj, ScoreKeeper.Instance.CalculateScore());
         }
     }
 

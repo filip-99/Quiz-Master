@@ -665,6 +665,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   startScene: Game
+  scriptableObject: {fileID: 11400000, guid: 818525d077936fb4c895cae94f3b3f8f, type: 2}
 --- !u!4 &231889467
 Transform:
   m_ObjectHideFlags: 0
@@ -692,6 +693,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7c7ee11c27f737f4c9a58bd117c72a42, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  questionDataListContainer: {fileID: 11400000, guid: d4c1104a27f05264193e7f87c2d5263c, type: 2}
 --- !u!1 &246905357
 GameObject:
   m_ObjectHideFlags: 0
@@ -7483,6 +7485,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6235c792dd9004c48a9f33d3951a9cf6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  questionDataListContainer: {fileID: 11400000, guid: d4c1104a27f05264193e7f87c2d5263c, type: 2}
   usernameInput: {fileID: 897296878}
   passwordInput: {fileID: 1226527314}
   playButton: {fileID: 1735095669}

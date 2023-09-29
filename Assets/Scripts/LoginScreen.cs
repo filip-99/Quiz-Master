@@ -11,7 +11,6 @@ using IneryLibrary.Core;
 using IneryLibrary.Core.Api.v1;
 using Newtonsoft.Json;
 using UnityEngine.SceneManagement;
-using System.Threading.Tasks;
 
 public class LoginScreen : MonoBehaviour
 {
@@ -26,7 +25,8 @@ public class LoginScreen : MonoBehaviour
         }
     }
 
-    private Task<UserData> jsonObj;
+    private UserData jsonObj;
+    public QuestionSO questionDataListContainer;
 
     [Header("UI Components")]
     public TMP_InputField usernameInput;
@@ -39,17 +39,20 @@ public class LoginScreen : MonoBehaviour
         instance = this;
     }
 
+    private void Start()
+    {
+        // Debug.Log(scriptableObject.userData.username.ToString());
+        usernameInput.text = BlockchainData.Instance.GetQuestions().Count.ToString();
+    }
+
     void Update()
     {
         FilledFields();
     }
 
-    private void Start()
-    {
 
-    }
 
-    public async void StartQuiz()
+    public void StartQuiz()
     {
         if (!UsernameCheck() || !PasswordCheck())
         {
@@ -57,8 +60,9 @@ public class LoginScreen : MonoBehaviour
         }
         else
         {
-
-            var jsonObj = await MediatorScript.Instance.GetRow(usernameInput.text);
+            MediatorScript.Instance.GetRow(usernameInput.text);
+            var jsonObj = MediatorScript.Instance.jsonObj;
+            Debug.Log(jsonObj.username);
             if ((usernameInput.text.Equals(jsonObj.username)) && (RegistrationScreen.HashPassword(passwordInput.text).Equals(jsonObj.password)))
             {
                 UserData user = new UserData();
@@ -68,7 +72,7 @@ public class LoginScreen : MonoBehaviour
                 user.user_id = jsonObj.user_id;
                 user.max_score = jsonObj.max_score;
 
-                MediatorScript.Instance.SaveUserData(user);
+                // scriptableObject.SaveUserData(user);
 
                 MediatorScript.Instance.StartGame();
             }

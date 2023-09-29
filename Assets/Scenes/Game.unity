@@ -1765,6 +1765,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   usernameText: {fileID: 901846655}
+  scriptableObject: {fileID: 0}
   questionText: {fileID: 1782651378}
   answerButtons:
   - {fileID: 1202400539}
@@ -2741,6 +2742,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   startScene: 
+  scriptableObject: {fileID: 0}
 --- !u!4 &1735103790
 Transform:
   m_ObjectHideFlags: 0
@@ -2768,6 +2770,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7c7ee11c27f737f4c9a58bd117c72a42, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  questionDataListContainer: {fileID: 0}
 --- !u!1 &1782651376
 GameObject:
   m_ObjectHideFlags: 0
@@ -3156,7 +3159,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\u010Cestitamo!\nVa\u0161 skor je 85%"
+  m_text: 'Congratulations!
+
+    Your score is 85%.'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 2e498d1c8094910479dc3e1b768306a4, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 2e498d1c8094910479dc3e1b768306a4, type: 2}

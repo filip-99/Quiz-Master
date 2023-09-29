@@ -5,40 +5,35 @@ using IneryLibrary;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using UnityEngine;
 using Json.Lib;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Threading.Tasks;
 
-public class BlockchainData : MonoBehaviour
+public class BlockchainData : Singleton<BlockchainData>
 {
-    static BlockchainData instance;
-    public static BlockchainData Instance
-    {
-        get
-        {
-            if (instance == null)
-                Debug.Log("BlockchainData is null");
-            return instance;
-        }
-    }
 
     public List<Question> questions = new List<Question>();
-    public List<Question> loadList = new List<Question>();
-
+    public QuestionSO questionDataListContainer;
 
     public void SaveQuestions(List<Question> questions)
     {
-        PlayerPrefs.DeleteKey("Questions");
+        // ScriptableObjects
+        questionDataListContainer.ClearQuestionData();
+        questionDataListContainer.AddQuestionsData(questions);
+        //----------------------------------------------------------------------
+        // PlayerPrefs.DeleteKey("Questions");
 
         // Serijalizuj listu u JSON format
-        string json = JsonConvert.SerializeObject(questions);
+        // string json = JsonConvert.SerializeObject(questions);
         // Saèuvaj JSON string u PlayerPrefs
-        PlayerPrefs.SetString("Questions", json);
+        // PlayerPrefs.SetString("Questions", json);
 
         // Obavezno pozovite PlayerPrefs.Save() kako biste saèuvali promene
-        PlayerPrefs.Save();
+        // PlayerPrefs.Save();
+
+        //---------------------------------------------------------------------
     }
 
     public async Task<List<Question>> GetQuestionsAsync()
@@ -65,7 +60,7 @@ public class BlockchainData : MonoBehaviour
                 // limit = 1
             });
             int index = 0;
-            questions.Clear();
+
             foreach (var row in result.rows)
             {
                 questions.Add(JsonConvert.DeserializeObject<Question>(row.ToString()));
@@ -83,29 +78,25 @@ public class BlockchainData : MonoBehaviour
         }
     }
 
-    private async void Awake()
+    private void Awake()
     {
-        instance = this;
+        base.Awake();
 
         questions.Clear();
-        questions = await GetQuestionsAsync();
-    }
-
-    private async void Start()
-    {
-        loadList.Clear();
-        loadList = await GetQuestionsAsync();
-        Debug.Log(loadList.Count);
-
+        GetQuestionsAsync();
     }
 
     public List<Question> LoadList()
     {
         // Uèitaj JSON string iz PlayerPrefs
-        string json = PlayerPrefs.GetString("Questions");
+        // string json = PlayerPrefs.GetString("Questions");
 
         // Deserijalizuj JSON string u listu
-        questions = JsonConvert.DeserializeObject<List<Question>>(json);
+        // questions = JsonConvert.DeserializeObject<List<Question>>(json);
+
+        // Debug.Log(questionDataListContainer.questionDataList.Count());
+
+        questions = questionDataListContainer.questionDataList;
 
         return questions;
     }
@@ -190,9 +181,8 @@ public class BlockchainData : MonoBehaviour
 
     public List<Question> GetQuestions()
     {
-        List<Question> originalQuestions = LoadList();
-        Debug.Log(loadList.Count);
 
+        List<Question> originalQuestions = questions;
 
         List<Question> limitedQuestions = LimitQuestion(originalQuestions, 10);
 
@@ -200,7 +190,10 @@ public class BlockchainData : MonoBehaviour
 
         List<Question> mixedQuestions = MixingAnswersAndQuestions(limitedAnswers);
 
+        Debug.Log(mixedQuestions.Count);
+
         return mixedQuestions;
+
     }
 
 

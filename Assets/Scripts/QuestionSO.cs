@@ -2,26 +2,30 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(menuName = "Quiz Question", fileName = "New Question")]
+[CreateAssetMenu(menuName = "Custom/Questions", fileName = "QuizQuestion")]
 public class QuestionSO : ScriptableObject
 {
-    [TextArea(2, 6)]
-    [SerializeField] string question = "Enter new question text here";
-    [SerializeField] string[] answers = new string[4];
-    [SerializeField] int correctAnswerIndex;
+    public List<Question> questionDataList = new List<Question>();
 
-    public string GetQuestion()
+    // Dodavanje više pitanja
+    public void AddQuestionsData(List<Question> newQuestion)
     {
-        return question;
+        questionDataList = newQuestion;
     }
 
-    public int GetCorrectAnswerIndex()
+    // Dodavanje jednog pitanja
+    public void AddUserData(Question newQuestion)
     {
-        return correctAnswerIndex;
+        questionDataList.Add(newQuestion);
     }
 
-    public string GetAnswer(int index)
+    public void RemoveQuestionData(Question data)
     {
-        return answers[index];
+        questionDataList.Remove(data);
+    }
+
+    public void ClearQuestionData()
+    {
+        questionDataList.Clear();
     }
 }
