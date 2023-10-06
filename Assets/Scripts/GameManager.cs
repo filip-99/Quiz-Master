@@ -46,6 +46,7 @@ public class GameManager : MonoBehaviour
 
     public void OnReplayLevel()
     {
+        // SceneManager.LoadSceneAsync(SceneManager.GetActiveScene().buildIndex);
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
     }
 }

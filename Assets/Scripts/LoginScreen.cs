@@ -5,10 +5,6 @@ using System.Text.RegularExpressions;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using IneryLibrary;
-using IneryLibrary.Core.Providers;
-using IneryLibrary.Core;
-using IneryLibrary.Core.Api.v1;
 using Newtonsoft.Json;
 using UnityEngine.SceneManagement;
 
@@ -25,7 +21,6 @@ public class LoginScreen : MonoBehaviour
         }
     }
 
-    private UserData jsonObj;
     public QuestionSO questionDataListContainer;
 
     [Header("UI Components")]
@@ -39,12 +34,6 @@ public class LoginScreen : MonoBehaviour
         instance = this;
     }
 
-    private void Start()
-    {
-        // Debug.Log(scriptableObject.userData.username.ToString());
-        usernameInput.text = BlockchainData.Instance.GetQuestions().Count.ToString();
-    }
-
     void Update()
     {
         FilledFields();
@@ -52,28 +41,20 @@ public class LoginScreen : MonoBehaviour
 
 
 
-    public void StartQuiz()
+    void StartQuiz() => StartCoroutine(StartQuiz_Coroutine());
+
+    public IEnumerator StartQuiz_Coroutine()
     {
         if (!UsernameCheck() || !PasswordCheck())
         {
-            return;
+            yield break;
         }
         else
         {
-            MediatorScript.Instance.GetRow(usernameInput.text);
-            var jsonObj = MediatorScript.Instance.jsonObj;
-            Debug.Log(jsonObj.username);
-            if ((usernameInput.text.Equals(jsonObj.username)) && (RegistrationScreen.HashPassword(passwordInput.text).Equals(jsonObj.password)))
+            yield return StartCoroutine(GetPostDataServer.Instance.Login_Coroutine(usernameInput.text, passwordInput.text));
+            if (GetPostDataServer.Instance.IsLogged())
             {
-                UserData user = new UserData();
-                user.username = jsonObj.username;
-                user.password = jsonObj.password;
-                user.email = jsonObj.email;
-                user.user_id = jsonObj.user_id;
-                user.max_score = jsonObj.max_score;
-
-                // scriptableObject.SaveUserData(user);
-
+                BlockchainData.Instance.SetUserPassword(passwordInput.text);
                 MediatorScript.Instance.StartGame();
             }
             else
@@ -83,7 +64,7 @@ public class LoginScreen : MonoBehaviour
                 UIManagerScene2.Instance.message.text = "The user does not exist, please try again.";
                 UIManagerScene2.Instance.ShowPanel(gameObject.transform);
 
-                return;
+                yield break;
             }
 
         }

@@ -1,8 +1,4 @@
-﻿using IneryLibrary;
-using IneryLibrary.Core;
-using IneryLibrary.Core.Api.v1;
-using IneryLibrary.Core.Providers;
-using Json.Lib;
+﻿using Json.Lib;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -62,7 +58,7 @@ public class Quiz : MonoBehaviour
     public bool isComplete;
 
 
-    private async void Awake()
+    private void Awake()
     {
         instance = this;
     }
@@ -70,9 +66,7 @@ public class Quiz : MonoBehaviour
     private void Start()
     {
         questions.Clear();
-        questions = BlockchainData.Instance.GetQuestions();
-        userData = MediatorScript.Instance.jsonObj;
-        Debug.Log(userData.username);
+        questions = GetPostDataServer.Instance.GetQuestions();
         progressBar.maxValue = questions.Count;
         progressBar.value = 0;
         SetUsername();
@@ -182,7 +176,7 @@ public class Quiz : MonoBehaviour
 
     public void SetUsername()
     {
-        usernameText.text = MediatorScript.Instance.jsonObj.username.ToString();
+        usernameText.text = GetPostDataServer.Instance.GetUserData().username;
     }
 
 }

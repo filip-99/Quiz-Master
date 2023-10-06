@@ -1,7 +1,3 @@
-using IneryLibrary.Core.Api.v1;
-using IneryLibrary.Core.Providers;
-using IneryLibrary.Core;
-using IneryLibrary;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -14,91 +10,24 @@ using System.Threading.Tasks;
 public class BlockchainData : Singleton<BlockchainData>
 {
 
-    public List<Question> questions = new List<Question>();
-    public QuestionSO questionDataListContainer;
+    private string userPassword;
 
-    public void SaveQuestions(List<Question> questions)
-    {
-        // ScriptableObjects
-        questionDataListContainer.ClearQuestionData();
-        questionDataListContainer.AddQuestionsData(questions);
-        //----------------------------------------------------------------------
-        // PlayerPrefs.DeleteKey("Questions");
-
-        // Serijalizuj listu u JSON format
-        // string json = JsonConvert.SerializeObject(questions);
-        // Saèuvaj JSON string u PlayerPrefs
-        // PlayerPrefs.SetString("Questions", json);
-
-        // Obavezno pozovite PlayerPrefs.Save() kako biste saèuvali promene
-        // PlayerPrefs.Save();
-
-        //---------------------------------------------------------------------
-    }
-
-    public async Task<List<Question>> GetQuestionsAsync()
-    {
-        Inery inery = new Inery(new IneryConfigurator()
-        {
-            HttpEndpoint = "https://tas.blockchain-servers.world", //Mainnet
-            ChainId = "3b891f1a78a7c27cf5dbaa82d2f30f96d0452262a354b4995b88c162ab066eee",
-            ExpireSeconds = 60,
-            SignProvider = new DefaultSignProvider("5KftZF2nz6eiYy9ZBtGymj75XJWiKJk2f859qdc6kGGMb6boAkb")
-        });
-
-        try
-        {
-            var result = await inery.GetTableRows(new GetTableRowsRequest()
-            {
-                json = true,
-                code = "quiz",
-                scope = "quiz",
-                table = "questions",
-                index_position = "0",
-                key_type = "i64",
-                encode_type = "string"
-                // limit = 1
-            });
-            int index = 0;
-
-            foreach (var row in result.rows)
-            {
-                questions.Add(JsonConvert.DeserializeObject<Question>(row.ToString()));
-                questions[index].correctAnswer = questions[index].answers[0];
-                index++;
-            }
-
-            SaveQuestions(questions);
-            return questions;
-        }
-        catch (Exception e)
-        {
-            Debug.Log(e);
-            return null;
-        }
-    }
 
     private void Awake()
     {
         base.Awake();
 
-        questions.Clear();
-        GetQuestionsAsync();
     }
 
-    public List<Question> LoadList()
+    public string GetUserPassword()
     {
-        // Uèitaj JSON string iz PlayerPrefs
-        // string json = PlayerPrefs.GetString("Questions");
+        return userPassword;
+    }
 
-        // Deserijalizuj JSON string u listu
-        // questions = JsonConvert.DeserializeObject<List<Question>>(json);
-
-        // Debug.Log(questionDataListContainer.questionDataList.Count());
-
-        questions = questionDataListContainer.questionDataList;
-
-        return questions;
+    // Set metoda za postavljanje vrednosti userPassword.
+    public void SetUserPassword(string newPassword)
+    {
+        userPassword = newPassword;
     }
 
     public List<Question> LimitQuestion(List<Question> questions, int limit)
@@ -179,11 +108,8 @@ public class BlockchainData : Singleton<BlockchainData>
         return questions;
     }
 
-    public List<Question> GetQuestions()
+    public List<Question> GetQuestions(List<Question> originalQuestions)
     {
-
-        List<Question> originalQuestions = questions;
-
         List<Question> limitedQuestions = LimitQuestion(originalQuestions, 10);
 
         List<Question> limitedAnswers = LimitAnswers(limitedQuestions);
